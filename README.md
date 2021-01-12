@@ -177,7 +177,7 @@ values_object = onepasswordconnectsdk.load(CONFIG)
 **Testing**
 
 ```bash
-$ pytest
+make test
 ```
 
 ## Security

@@ -17,7 +17,6 @@ curVersion = $(shell poetry version -s)
 test:	## Run test suite
 	@poetry run pytest
 
-
 build: clean	## Build project
 	@poetry build --format sdist
 
@@ -30,7 +29,7 @@ help:	## Prints this help message
 
 ## Release functions =====================
 
-release/prepare: ##.check_git_clean	## Bumps version and creates release branch (call with 'release/prepare version=<semver>')
+release/prepare: .check_git_clean	## Bumps version and creates release branch (call with 'release/prepare version=<semver>')
 
 	@test $(version) || (echo "[ERROR] version argument not set."; exit 1)
 	@git fetch --quiet origin $(MAIN_BRANCH)
