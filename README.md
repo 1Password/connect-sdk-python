@@ -7,7 +7,15 @@ The 1Password Connect SDK provides access to the 1Password via 1Password Connect
 - 1Password Connect deployed in your infrastructure.
 ## Installation
 
-`pip install https://github.com/1Password/connect-sdk-python/archive/v{version}.zip`
+To install the 1Password Connect Python SDK use the following command:
+```bash
+$ pip install git+ssh://git@github.com/1Password/connect-sdk-python.git
+```
+
+To install a specific release of the 1Password Connect Python SDK use the following command:
+```bash
+$ pip install git+ssh://git@github.com/1Password/connect-sdk-python.git@v{version}
+```
 
 ## Usage
 
