@@ -3,11 +3,11 @@ import shlex
 from typing import List, Dict
 from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
+    SummaryItem,
     Item,
-    FullItem,
     ParsedField,
     ParsedItem,
-    FullItemAllOfSections,
+    Section,
 )
 from onepasswordconnectsdk.models.constants import (
     ITEM_TAG,
@@ -173,7 +173,7 @@ def _set_values_for_item(
         parsed_item.item_title, parsed_item.vault_uuid
     )
     # Fetching the full item
-    item: FullItem = client.get_item(summary_item.id, parsed_item.vault_uuid)
+    item: Item = client.get_item(summary_item.id, parsed_item.vault_uuid)
 
     sections = _convert_sections_to_dict(item.sections)
 
@@ -215,7 +215,7 @@ def _set_values_for_item(
             )
 
 
-def _convert_sections_to_dict(sections: List[FullItemAllOfSections]):
+def _convert_sections_to_dict(sections: List[Section]):
     if not sections:
         return {}
     section_dict = {section.label: section.id for section in sections}

@@ -42,7 +42,9 @@ class Item(object):
         'trashed': 'bool',
         'created_at': 'datetime',
         'updated_at': 'datetime',
-        'last_edited_by': 'str'
+        'last_edited_by': 'str',
+        'sections': 'list[Section]',
+        'fields': 'list[Field]'
     }
 
     attribute_map = {
@@ -57,10 +59,12 @@ class Item(object):
         'trashed': 'trashed',
         'created_at': 'createdAt',
         'updated_at': 'updatedAt',
-        'last_edited_by': 'lastEditedBy'
+        'last_edited_by': 'lastEditedBy',
+        'sections': 'sections',
+        'fields': 'fields'
     }
 
-    def __init__(self, id=None, title=None, vault=None, category=None, urls=None, favorite=False, tags=None, version=None, trashed=False, created_at=None, updated_at=None, last_edited_by=None):  # noqa: E501
+    def __init__(self, id=None, title=None, vault=None, category=None, urls=None, favorite=False, tags=None, version=None, trashed=False, created_at=None, updated_at=None, last_edited_by=None, sections=None, fields=None):  # noqa: E501
         self._id = None
         self._title = None
         self._vault = None
@@ -73,6 +77,8 @@ class Item(object):
         self._created_at = None
         self._updated_at = None
         self._last_edited_by = None
+        self._sections = None
+        self._fields = None
         self.discriminator = None
 
         if id is not None:
@@ -98,6 +104,10 @@ class Item(object):
             self.updated_at = updated_at
         if last_edited_by is not None:
             self.last_edited_by = last_edited_by
+        if sections is not None:
+            self.sections = sections
+        if fields is not None:
+            self.fields = fields
 
     @property
     def id(self):
@@ -356,6 +366,48 @@ class Item(object):
         """
 
         self._last_edited_by = last_edited_by
+
+    @property
+    def sections(self):
+        """Gets the sections of this Item.  # noqa: E501
+
+
+        :return: The sections of this Item.  # noqa: E501
+        :rtype: list[Section]
+        """
+        return self._sections
+
+    @sections.setter
+    def sections(self, sections):
+        """Sets the sections of this Item.
+
+
+        :param sections: The sections of this Item.  # noqa: E501
+        :type: list[Section]
+        """
+
+        self._sections = sections
+
+    @property
+    def fields(self):
+        """Gets the fields of this Item.  # noqa: E501
+
+
+        :return: The fields of this Item.  # noqa: E501
+        :rtype: list[Field]
+        """
+        return self._fields
+
+    @fields.setter
+    def fields(self, fields):
+        """Sets the fields of this Item.
+
+
+        :param fields: The fields of this Item.  # noqa: E501
+        :type: list[Field]
+        """
+
+        self._fields = fields
 
     def to_dict(self):
         """Returns the model properties as a dict"""
