@@ -91,12 +91,12 @@ Create an item in the specified vault.
 
 ```python
 # Example item creation. Create an item with your desired arguments. 
-item = onepasswordconnectsdk.models.FullItem(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
+item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                                       id="kp2td65r4wbuhocwhhijpdbfqq",
                                       title="newtitle",
                                       category="LOGIN",
                                       tags=["1password-connect"],
-                                      fields=[FullItemAllOfFields(value="new_user",
+                                      fields=[Field(value="new_user",
                                                                   purpose="USERNAME")],
                                       )
 client.create_item("{vault_id}", item)
@@ -108,12 +108,12 @@ Item the item with the specified item and vault ids. The existing item will be o
 
 ```python
 # Example item creation. Create an item with your desired arguments. 
-item = onepasswordconnectsdk.models.FullItem(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
+item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                                       id="kp2td65r4wbuhocwhhijpdbfqq",
                                       title="newtitle",
                                       category="LOGIN",
                                       tags=["1password-connect"],
-                                      fields=[FullItemAllOfFields(value="new_user",
+                                      fields=[Field(value="new_user",
                                                                   purpose="USERNAME")],
                                       )
 client.update_item("{item_id}", "{vault_id}", item)

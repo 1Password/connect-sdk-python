@@ -205,14 +205,14 @@ def get_item():
 }
 
 def generate_full_item():
-    item = models.FullItem(vault=models.ItemVault(id="av223f76ydutdngislnkbz6z5u"),
+    item = models.Item(vault=models.ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                            id="kp2td65r4wbuhocwhhijpdbfqq",
                            title="newtitle",
                            category="LOGIN",
                            tags=["secret-service"],
-                           fields=[models.FullItemAllOfFields(value="new_user",
+                           fields=[models.Field(value="new_user",
                                                               purpose="USERNAME",
                                                               type="STRING",
-                                                              section=models.FullItemAllOfSection(id="Section_47DC4DDBF26640AB8B8618DA36D5A499"))],
-                           sections=[models.FullItemAllOfSections(id="id", label="label")])
+                                                              section=models.FieldSection(id="Section_47DC4DDBF26640AB8B8618DA36D5A499"))],
+                           sections=[models.Section(id="id", label="label")])
     return item

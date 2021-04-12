@@ -8,7 +8,7 @@ import requests
 import datetime
 from requests.exceptions import HTTPError
 import onepasswordconnectsdk
-from onepasswordconnectsdk.models import FullItem, ItemVault
+from onepasswordconnectsdk.models import Item, ItemVault
 
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
@@ -73,7 +73,7 @@ class Client:
                 f"Unable to retrieve item. Received {response.status_code}\
                      for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "FullItem")
+        return self.deserialize(response.content, "Item")
 
     def get_item_by_title(self, title: str, vault_id: str):
         """Get a specific item by title
@@ -102,7 +102,7 @@ class Client:
                     title {title}"
             )
 
-        return self.deserialize(response.content, "list[Item]")[0]
+        return self.deserialize(response.content, "list[SummaryItem]")[0]
 
     def get_items(self, vault_id: str):
         """Returns a list of item summaries for the specified vault
@@ -115,7 +115,7 @@ class Client:
             from the 1Password Connect API
 
         Returns:
-            List[Item]: A list of summarized items
+            List[SummaryItem]: A list of summarized items
         """
         url = f"/v1/vaults/{vault_id}/items"
 
@@ -128,7 +128,7 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
 
-        return self.deserialize(response.content, "list[Item]")
+        return self.deserialize(response.content, "list[SummaryItem]")
 
     def delete_item(self, item_id: str, vault_id: str):
         """Deletes a specified item from a specified vault
@@ -153,19 +153,19 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
 
-    def create_item(self, vault_id: str, item: FullItem):
+    def create_item(self, vault_id: str, item: Item):
         """Creates an item at the specified vault
 
         Args:
             vault_id (str): The id of the vault in which add the item to
-            item (FullItem): The item to create
+            item (Item): The item to create
 
         Raises:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
             from the 1Password Connect API
 
         Returns:
-            FullItem: The created item
+            Item: The created item
         """
 
         url = f"/v1/vaults/{vault_id}/items"
@@ -178,22 +178,22 @@ class Client:
                 f"Unable to post item. Received {response.status_code}\
                     for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "FullItem")
+        return self.deserialize(response.content, "Item")
 
-    def update_item(self, item_uuid: str, vault_id: str, item: FullItem):
+    def update_item(self, item_uuid: str, vault_id: str, item: Item):
         """Update the specified item at the specified vault.
 
         Args:
             item_uuid (str): The id of the item in which to update
             vault_id (str): The id of the vault in which to update the item
-            item (FullItem): The updated item
+            item (Item): The updated item
 
         Raises:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
             from the 1Password Connect API
 
         Returns:
-            FullItem: The updated item
+            Item: The updated item
         """
         url = f"/v1/vaults/{vault_id}/items/{item_uuid}"
         item.id = item_uuid
@@ -207,7 +207,7 @@ class Client:
                 f"Unable to post item. Received {response.status_code}\
                     for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "FullItem")
+        return self.deserialize(response.content, "Item")
 
     def get_vault(self, vault_id: str):
         """Returns the vault with the given vault_id
