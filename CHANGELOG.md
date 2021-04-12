@@ -2,13 +2,23 @@
 # Latest
 
 ## Features
-* A user-friendly description of a new feature. {issue-number}
+  * A user-friendly description of a new feature. {issue-number}
 
 ## Fixes
-* A user-friendly description of a fix. {issue-number}
+ * A user-friendly description of a fix. {issue-number}
 
 ## Security
-* A user-friendly description of a security fix. {issue-number}
+ * A user-friendly description of a security fix. {issue-number}
+
+---
+
+[//]: # (START/v1.0.0)
+# v1.0.0
+
+## Features
+* Release Automation
+* Updating pip install instructions in readme
+* Converting models to use more user friendly names
 
 ---
 
