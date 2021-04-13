@@ -40,7 +40,8 @@ There are two methods available for creating a client:
 ```python
 from onepasswordconnectsdk.client import (
     Client,
-    new_client_from_environment
+    new_client_from_environment,
+    new_client
 )
 
 # creating client using OP_CONNECT_TOKEN environment variable
@@ -48,7 +49,7 @@ client: Client = new_client_from_environment(
      "{1Password_Connect_Host}")
 
 # creating client by supplying hostname and 1Password Connect API token
-client: Client = new_client_from_environment(
+client: Client = new_client(
     "{1Password_Connect_Host}",
     "{1Password_Connect_API_Token}")
 ```
