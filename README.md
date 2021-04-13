@@ -2,7 +2,7 @@
 
 The 1Password Connect SDK provides access to the 1Password via 1Password Connect hosted on your infrastructure. The library is intended to be used by Python applications to simplify accessing `items` in 1Password `vaults`.
 
-## Prerequisites:
+## Prerequisites
 
 - 1Password Connect deployed in your infrastructure.
 ## Installation
@@ -38,9 +38,10 @@ There are two methods available for creating a client:
 - `new_client`: Builds a new client for interacting with 1Password Connect. Accepts the hostname of 1Password Connect and the API token generated for the application.
 
 ```python
-:from onepasswordconnectsdk.client import (
+from onepasswordconnectsdk.client import (
     Client,
-    new_client_from_environment
+    new_client_from_environment,
+    new_client
 )
 
 # creating client using OP_CONNECT_TOKEN environment variable
@@ -48,7 +49,7 @@ client: Client = new_client_from_environment(
      "{1Password_Connect_Host}")
 
 # creating client by supplying hostname and 1Password Connect API token
-client: Client = new_client_from_environment(
+client: Client = new_client(
     "{1Password_Connect_Host}",
     "{1Password_Connect_API_Token}")
 ```
