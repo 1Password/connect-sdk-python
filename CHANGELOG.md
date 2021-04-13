@@ -12,6 +12,15 @@
 
 ---
 
+[//]: # (START/v1.0.1)
+# v1.0.1
+
+## Fixes
+* Code snippet for setting up client now functions correctly.
+* Package correctly shows information like readme and the GitHub repository on PyPi. 
+
+---
+
 [//]: # (START/v1.0.0)
 # v1.0.0
 
