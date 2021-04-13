@@ -14,7 +14,7 @@ $ pip install onepasswordconnectsdk
 
 To install a specific release of the 1Password Connect Python SDK use the following command:
 ```bash
-$ pip install onepasswordconnectsdk==1.0.0
+$ pip install onepasswordconnectsdk==1.0.1
 ```
 
 ## Usage
