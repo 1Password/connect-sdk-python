@@ -57,7 +57,7 @@ client_from_token: Client = new_client(
 
 **Get Item**
 
-Get an item by item and vault ids:
+Get a specific item by item and vault ids:
 
 ```python
 client.get_item("{item_id}", "{vault_id}")
@@ -65,7 +65,7 @@ client.get_item("{item_id}", "{vault_id}")
 
 **Get Item By Title**
 
-Get an item by item title and vault id:
+Get a specific item by item title and vault id:
 
 ```python
 client.get_item_by_title("{item_title}", "{vault_id}")
