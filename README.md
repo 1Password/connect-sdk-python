@@ -108,7 +108,7 @@ client.create_item("{vault_id}", item)
 
 **Update Item**
 
-Update the item defined by the specified item and vault ids. The existing item will be overwritten with the newly supplied item.
+Update the item identified by the specified item and vault ids. The existing item will be overwritten with the newly supplied item.
 
 ```python
 from onepasswordconnectsdk.models import (ItemVault, Field)
