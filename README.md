@@ -27,7 +27,6 @@ import onepasswordconnectsdk
 
 **Environment Variables**
 
-In order to use the functionality provided by the Python Connect SDK, the following envvars need to be set:
 - **OP_CONNECT_TOKEN** – The token to be used to authenticate with the 1Password Connect API.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
 
