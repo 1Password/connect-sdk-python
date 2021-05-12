@@ -9,6 +9,7 @@ import datetime
 from requests.exceptions import HTTPError
 import onepasswordconnectsdk
 from onepasswordconnectsdk.models import Item, ItemVault
+from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
@@ -481,7 +482,7 @@ def new_client(url: str, token: str):
     return Client(url=url, token=token)
 
 
-def new_client_from_environment(url: str):
+def new_client_from_environment(url: str = None):
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
@@ -493,6 +494,9 @@ def new_client_from_environment(url: str):
     Client: The 1Password Connect client
     """
     token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
+
+    if url is None:
+        url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
 
     if token is None:
         raise EnvironmentTokenNotSetException(

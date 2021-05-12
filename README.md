@@ -28,13 +28,18 @@ import onepasswordconnectsdk
 **Environment Variables**
 
 - **OP_CONNECT_TOKEN** – The token to be used to authenticate with the 1Password Connect API.
+- **OP_CONNECT_HOST** - The hostname of the 1Password Connect API.
+  Possible values include:
+    - `connect-api:8080` if the Connect server is running in the same Kubernetes cluster as your application.
+    - `localhost:8080` if the Connect server is running in Docker on the same host.
+    - `<ip>:8080` or `<hostname>:8080` if the Connect server is running on another host.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
 
 **Creating a Client**
 
 There are two methods available for creating a client:
 
-- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN` *environment variable (ie a 1Password Connect API token)* and the hostname of 1Password Connect.
+- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN` and `OP_CONNECT_HOST` *environment variables*.
 - `new_client`: Builds a new client for interacting with 1Password Connect. Accepts the hostname of 1Password Connect and the API token generated for the application.
 
 ```python
@@ -44,9 +49,8 @@ from onepasswordconnectsdk.client import (
     new_client
 )
 
-# creating client using OP_CONNECT_TOKEN environment variable
-client: Client = new_client_from_environment(
-     "{1Password_Connect_Host}")
+# creating client using OP_CONNECT_TOKEN and OP_CONNECT_HOST environment variables
+client: Client = new_client_from_environment()
 
 # creating client by supplying hostname and 1Password Connect API token
 client: Client = new_client(
