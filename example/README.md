@@ -28,4 +28,4 @@ docker run -it -e OP_CONNECT_TOKEN=<YOUR_CONNECT_TOKEN> -e OP_VAULT=<YOUR_VAULT_
 
 If your Connect instance is deployed locally, the `1PASSWORD_CONNECT_HOST` environment variable should be set to `http://host.docker.internal:8080`.
 
-You should now be able to see, in real time, the 5 different steps (creation of client, creation of item, posting to vault, retrieval from vault, deletion) as they happen.
+You will now see, in real time, the 5 different steps (creation of client, creation of item, posting to vault, retrieval from vault, deletion) as they happen.
