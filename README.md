@@ -1,6 +1,6 @@
 # 1Password Connect Python SDK
 
-The 1Password Connect SDK provides access to the 1Password via 1Password Connect hosted on your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
+The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://support.1password.com/secrets-automation/) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
 ## Prerequisites
 
