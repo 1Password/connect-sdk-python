@@ -1,18 +1,18 @@
 # 1Password Connect Python SDK
 
-The 1Password Connect SDK provides access to the 1Password via 1Password Connect hosted on your infrastructure. The library is intended to be used by Python applications to simplify accessing `items` in 1Password `vaults`.
+The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://support.1password.com/secrets-automation/) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
 ## Prerequisites
 
-- 1Password Connect deployed in your infrastructure.
+- [1Password Connect](https://support.1password.com/secrets-automation/#step-2-deploy-a-1password-connect-server) deployed in your infrastructure
 ## Installation
 
-To install the 1Password Connect Python SDK use the following command:
+To install the 1Password Connect Python SDK:
 ```bash
 $ pip install onepasswordconnectsdk
 ```
 
-To install a specific release of the 1Password Connect Python SDK use the following command:
+To install a specific release of the 1Password Connect Python SDK:
 ```bash
 $ pip install onepasswordconnectsdk==1.0.1
 ```
@@ -35,7 +35,7 @@ import onepasswordconnectsdk
     - `<ip>:8080` or `<hostname>:8080` if the Connect server is running on another host.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
 
-**Creating a Client**
+**Create a Client**
 
 There are two methods available for creating a client:
 
@@ -50,17 +50,17 @@ from onepasswordconnectsdk.client import (
 )
 
 # creating client using OP_CONNECT_TOKEN and OP_CONNECT_HOST environment variables
-client: Client = new_client_from_environment()
+client_from_env: Client = new_client_from_environment()
 
-# creating client by supplying hostname and 1Password Connect API token
-client: Client = new_client(
+# creates a client by supplying hostname and 1Password Connect API token
+client_from_token: Client = new_client(
     "{1Password_Connect_Host}",
     "{1Password_Connect_API_Token}")
 ```
 
 **Get Item**
 
-Get a specific item by item and vault uuids:
+Get a specific item by item and vault ids:
 
 ```python
 client.get_item("{item_id}", "{vault_id}")
@@ -68,15 +68,15 @@ client.get_item("{item_id}", "{vault_id}")
 
 **Get Item By Title**
 
-Get item by item title and vault id
+Get a specific item by item title and vault id:
 
 ```python
 client.get_item_by_title("{item_title}", "{vault_id}")
 ```
 
-**Get Items**
+**Get All Items**
 
-Get a summarized list of all items for a specified vault
+Get a summarized list of all items for a specified vault:
 
 ```python
 client.get_items("{vault_id}")
@@ -92,9 +92,11 @@ client.delete_item("{item_id}", "{vault_id}")
 
 **Create Item**
 
-Create an item in the specified vault.
+Create an item in a specified vault:
 
 ```python
+from onepasswordconnectsdk.models import (ItemVault, Field)
+
 # Example item creation. Create an item with your desired arguments. 
 item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                                       id="kp2td65r4wbuhocwhhijpdbfqq",
@@ -109,9 +111,11 @@ client.create_item("{vault_id}", item)
 
 **Update Item**
 
-Item the item with the specified item and vault ids. The existing item will be overwritten with the newly supplied item.
+Update the item identified by the specified item and vault ids. The existing item will be overwritten with the newly supplied item.
 
 ```python
+from onepasswordconnectsdk.models import (ItemVault, Field)
+
 # Example item creation. Create an item with your desired arguments. 
 item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                                       id="kp2td65r4wbuhocwhhijpdbfqq",
@@ -124,9 +128,9 @@ item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngisln
 client.update_item("{item_id}", "{vault_id}", item)
 ```
 
-**Get Vault**
+**Get Specific Vault**
 
-Get vault by vault id
+Get a vault by vault id:
 
 ```python
 client.get_vault("{vault_id}")
@@ -134,7 +138,7 @@ client.get_vault("{vault_id}")
 
 **Get Vaults**
 
-Retrieve all vaults available to the service account.
+Retrieve all vaults available to the service account:
 
 ```python
 client.get_vaults()
