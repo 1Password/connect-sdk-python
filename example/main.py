@@ -7,7 +7,7 @@ from onepasswordconnectsdk.models import (ItemVault, Field)
 
 op_connect_token = os.environ["OP_CONNECT_TOKEN"]
 default_vault = os.environ["OP_VAULT"]
-connect_host = os.environ["1PASSWORD_CONNECT_HOST"]
+connect_host = os.environ["OP_CONNECT_HOST"]
 secret_string = os.environ["SECRET_STRING"]
 
 print(steps.steps['intro'])
