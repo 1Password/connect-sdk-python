@@ -497,6 +497,10 @@ def new_client_from_environment(url: str = None):
 
     if url is None:
         url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
+        if url is None:
+            raise EnvironmentHostNotSetException(
+                f"{CONNECT_HOST_ENV_VARIABLE} environment variable is not set"
+            )
 
     if token is None:
         raise EnvironmentTokenNotSetException(
@@ -514,6 +518,8 @@ class OnePasswordConnectSDKError(RuntimeError):
 class EnvironmentTokenNotSetException(OnePasswordConnectSDKError, TypeError):
     pass
 
+class EnvironmentHostNotSetException(OnePasswordConnectSDKError, TypeError):
+    pass
 
 class FailedToRetrieveItemException(OnePasswordConnectSDKError):
     pass
