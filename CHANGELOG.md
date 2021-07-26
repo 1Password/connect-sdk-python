@@ -12,6 +12,18 @@
 
 ---
 
+[//]: # (START/v1.1.0)
+# v1.1.0
+
+## Features
+ * Connect host can now also be supplied through the `OP_CONNECT_HOST` envrionment variable.
+ * The `API_CREDENTIAL` category is now supported. {#13}
+
+## Fixes
+ * The `OTP` field type is no longer considered to be invalid. {#12}
+
+---
+
 [//]: # (START/v1.0.1)
 # v1.0.1
 
