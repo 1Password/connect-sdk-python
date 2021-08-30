@@ -54,6 +54,24 @@ class Client:
         headers["Authorization"] = f"Bearer {self.token}"
         headers["Content-Type"] = "application/json"
         return headers
+    
+    def download_document(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/vaults/{vaultUuid}/items/{itemUuid}/files/{fileUuid}/content"
+        
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve items. Received {response.status_code} \
+                     for {url} with message: {response.json().get('message')}"
+            )
+        
+        filename = response.headers['Content-Disposition'].split('"')[1]
+        f = open(filename,"w+")
+        f.write(response.text)
+        f.close()
+
 
     def get_item(self, item_id: str, vault_id: str):
         """Get a specific item by uuid
