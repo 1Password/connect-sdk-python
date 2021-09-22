@@ -30,9 +30,9 @@ import onepasswordconnectsdk
 - **OP_CONNECT_TOKEN** – The token to be used to authenticate with the 1Password Connect API.
 - **OP_CONNECT_HOST** - The hostname of the 1Password Connect API.
   Possible values include:
-    - `connect-api:8080` if the Connect server is running in the same Kubernetes cluster as your application.
-    - `localhost:8080` if the Connect server is running in Docker on the same host.
-    - `<ip>:8080` or `<hostname>:8080` if the Connect server is running on another host.
+    - `http(s)://connect-api:8080` if the Connect server is running in the same Kubernetes cluster as your application.
+    - `http://localhost:8080` if the Connect server is running in Docker on the same host.
+    - `http(s)://<ip>:8080` or `http(s)://<hostname>:8080` if the Connect server is running on another host.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
 
 **Create a Client**
