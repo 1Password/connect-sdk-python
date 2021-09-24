@@ -5,7 +5,6 @@ import six
 
 
 class File(object):
-
     openapi_types = {
         'id': 'str',
         'name': 'str',
@@ -37,75 +36,30 @@ class File(object):
 
     @property
     def id(self):
-        """Gets the id of this Item.  # noqa: E501
-
-
-        :return: The id of this Item.  # noqa: E501
-        :rtype: str
-        """
         return self._id
 
     @id.setter
     def id(self, id):
-        """Sets the id of this Item.
-
-
-        :param id: The id of this Item.  # noqa: E501
-        :type: str
-        """
-
         self._id = id
 
     @property
     def name(self):
-        """Gets the title of this Item.  # noqa: E501
-
-
-        :return: The title of this Item.  # noqa: E501
-        :rtype: str
-        """
         return self._name
 
     @name.setter
     def name(self, name):
-        """Sets the title of this Item.
-
-
-        :param name: The title of this Item.  # noqa: E501
-        :type: str
-        """
-
         self._name = name
 
     @property
     def size(self):
-        """Gets the vault of this Item.  # noqa: E501
-
-
-        :return: The vault of this Item.  # noqa: E501
-        :rtype: ItemVault
-        """
         return self._size
 
     @size.setter
     def size(self, size):
-        """Sets the vault of this Item.
-
-
-        :param vault: The vault of this Item.  # noqa: E501
-        :type: ItemVault
-        """
-
         self._size = size
 
     @property
     def content_path(self):
-        """Gets the category of this Item.  # noqa: E501
-
-
-        :return: The category of this Item.  # noqa: E501
-        :rtype: str
-        """
         return self._content_path
 
     @content_path.setter
