@@ -54,9 +54,35 @@ class Client:
         headers["Authorization"] = f"Bearer {self.token}"
         headers["Content-Type"] = "application/json"
         return headers
-    
-    def download_document(self, file_id: str, item_id: str, vault_id: str):
-        url = f"/vaults/{vaultUuid}/items/{itemUuid}/files/{fileUuid}/content"
+
+    def get_file(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve item. Received {response.status_code}\
+                                     for {url} with message: {response.json().get('message')}"
+            )
+        print(response.content)
+        return self.deserialize(response.content, "File")
+
+    def get_files(self, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files"
+
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve item. Received {response.status_code}\
+                             for {url} with message: {response.json().get('message')}"
+            )
+        return self.deserialize(response.content, "list[File]")
+
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
         
         response = self.build_request("GET", url)
         try:
@@ -67,10 +93,8 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
         
-        filename = response.headers['Content-Disposition'].split('"')[1]
-        f = open(filename,"w+")
-        f.write(response.text)
-        f.close()
+        print(response.content)
+        return self.deserialize(response.content, "File_Content")
 
 
     def get_item(self, item_id: str, vault_id: str):
