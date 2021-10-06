@@ -11,12 +11,10 @@ import onepasswordconnectsdk
 from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
-
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
 
 
 class Client:
-
     PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
     NATIVE_TYPES_MAPPING = {
         "int": int,
@@ -65,7 +63,6 @@ class Client:
                 f"Unable to retrieve item. Received {response.status_code}\
                                      for {url} with message: {response.json().get('message')}"
             )
-        print(response.content)
         return self.deserialize(response.content, "File")
 
     def get_files(self, item_id: str, vault_id: str):
@@ -83,7 +80,7 @@ class Client:
 
     def get_file_content(self, file_id: str, item_id: str, vault_id: str):
         url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
-        
+
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -92,10 +89,17 @@ class Client:
                 f"Unable to retrieve items. Received {response.status_code} \
                      for {url} with message: {response.json().get('message')}"
             )
-        
-        print(response.content)
-        return self.deserialize(response.content, "File_Content")
+        return response.content
 
+    def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
+        file_object = self.get_file(file_id, item_id, vault_id)
+        filename = file_object.name
+        content = self.get_file_content(file_id, item_id, vault_id)
+        global_path = os.path.join(path, filename)
+
+        file = open(global_path, "wb")
+        file.write(content)
+        file.close()
 
     def get_item(self, item_id: str, vault_id: str):
         """Get a specific item by uuid
@@ -484,8 +488,8 @@ class Client:
         """
         has_discriminator = False
         if (
-            hasattr(klass, "get_real_child_model")
-            and klass.discriminator_value_class_map
+                hasattr(klass, "get_real_child_model")
+                and klass.discriminator_value_class_map
         ):
             has_discriminator = True
 
@@ -494,9 +498,9 @@ class Client:
 
         kwargs = {}
         if (
-            data is not None
-            and klass.openapi_types is not None
-            and isinstance(data, (list, dict))
+                data is not None
+                and klass.openapi_types is not None
+                and isinstance(data, (list, dict))
         ):
             for attr, attr_type in six.iteritems(klass.openapi_types):
                 if klass.attribute_map[attr] in data:
@@ -560,8 +564,10 @@ class OnePasswordConnectSDKError(RuntimeError):
 class EnvironmentTokenNotSetException(OnePasswordConnectSDKError, TypeError):
     pass
 
+
 class EnvironmentHostNotSetException(OnePasswordConnectSDKError, TypeError):
     pass
+
 
 class FailedToRetrieveItemException(OnePasswordConnectSDKError):
     pass
