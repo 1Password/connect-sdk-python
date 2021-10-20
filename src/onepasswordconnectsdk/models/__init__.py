@@ -11,6 +11,7 @@ from onepasswordconnectsdk.models.item import Item
 from onepasswordconnectsdk.models.item_details import ItemDetails
 from onepasswordconnectsdk.models.field import Field
 from onepasswordconnectsdk.models.field_section import FieldSection
+from onepasswordconnectsdk.models.file import File
 from onepasswordconnectsdk.models.section import Section
 from onepasswordconnectsdk.models.summary_item import SummaryItem
 from onepasswordconnectsdk.models.item_urls import ItemUrls
