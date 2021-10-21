@@ -1,11 +1,10 @@
 import json
 from requests import Session, Response
-from unittest.mock import Mock, patch
-import pytest
+from unittest.mock import patch
 import onepasswordconnectsdk
-from onepasswordconnectsdk import client, models
+from onepasswordconnectsdk import client
 
-VAULT_ID = "some_vault_id"
+VAULT_ID = "abcdefghijklmnopqrstuvwxyz"
 ITEM_NAME1 = "TEST USER"
 ITEM_NAME2 = "Another User"
 HOST = "mock_host"

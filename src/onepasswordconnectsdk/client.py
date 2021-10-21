@@ -55,8 +55,8 @@ class Client:
         return headers
 
     def get_item(self, item: str, vault: str):
-        """Get a specifiv item
-        
+        """Get a specific item
+
         Args:
             item (str): the id or title of the item to be fetched
             vault (str): the id or name of the vault in which to get the item from
@@ -66,14 +66,14 @@ class Client:
             from the 1Password Connect API
 
         Returns:
-            Item object: The found item 
+            Item object: The found item
         """
 
         vault_id = vault
-        if self._is_valid_UUID(vault) is False:
+        if not self._is_valid_UUID(vault):
             vault_id = self.get_vault_by_title(vault).id
 
-        if self._is_valid_UUID(item) is True:
+        if self._is_valid_UUID(item):
             return self.get_item_by_id(item, vault_id)
         else:
             return self.get_item_by_title(item, vault_id)
@@ -137,7 +137,7 @@ class Client:
             )
 
         item_summary = self.deserialize(response.content, "list[SummaryItem]")[0]
-        return self.get_item(item_summary.id, vault_id)
+        return self.get_item_by_id(item_summary.id, vault_id)
 
     def get_items(self, vault_id: str):
         """Returns a list of item summaries for the specified vault

@@ -1,17 +1,48 @@
 import json
 from requests import Session, Response
-from unittest.mock import Mock, patch
-import pytest
+from unittest.mock import patch
 from onepasswordconnectsdk import client, models
 
-VAULT_ID = "some_vault_id"
-ITEM_ID = "some_item_id"
+VAULT_ID = "abcdefghijklmnopqrstuvwxyz"
+VAULT_TITLE = "some_vault_title"
+ITEM_ID = "zyxwvutsrqponmlkjihgfedcba"
+ITEM_TITLE = "some_item_title"
 HOST = "mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
 
 @patch.object(Session, 'request')
-def test_get_item(mock):
+def test_get_item_by_id(mock):
+    expected_item = get_item()
+    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_item)
+    mock.return_value = response
+
+    item = SS_CLIENT.get_item_by_id(ITEM_ID, VAULT_ID)
+    compare_items(expected_item, item)
+    mock.assert_called_with("GET", expected_path)
+
+@patch.object(Session, 'request')
+def test_get_item_by_title(mock):
+    expected_items = get_items()
+    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=name eq \"{ITEM_TITLE}\""
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_items)
+    mock.return_value = response
+
+    item = SS_CLIENT.get_item_by_title(ITEM_TITLE, VAULT_ID)
+    compare_items(expected_items[0], item)
+    mock.assert_called_with("GET", expected_path)
+
+@patch.object(Session, 'request')
+def test_get_item_item_id_vault_id(mock):
     expected_item = get_item()
     expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
@@ -24,6 +55,47 @@ def test_get_item(mock):
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_ID)
     compare_items(expected_item, item)
     mock.assert_called_with("GET", expected_path)
+
+@patch.object(Session, 'request')
+def test_get_item_item_id_vault_title(mock):
+    expected_item = get_item()
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_item)
+    mock.return_value = response
+
+    item = SS_CLIENT.get_item(ITEM_ID, VAULT_TITLE)
+    compare_items(expected_item, item)
+
+@patch.object(Session, 'request')
+def test_get_item_item_title_vault_id(mock):
+    expected_item = get_item()
+    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=name eq \"{ITEM_TITLE}\""
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_item)
+    mock.return_value = response
+
+    item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_ID)
+    compare_items(expected_item, item)
+    mock.assert_called_with("GET", expected_path)
+
+@patch.object(Session, 'request')
+def test_get_item_item_title_vault_title(mock):
+    expected_item = get_item()
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_item)
+    mock.return_value = response
+
+    item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_TITLE)
+    compare_items(expected_item, item)
 
 @patch.object(Session, 'request')
 def test_get_items(mock):

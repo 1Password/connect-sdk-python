@@ -1,10 +1,10 @@
 import json
 from requests import Session, Response
-from unittest.mock import Mock, patch
-import pytest
-from onepasswordconnectsdk import client, models
+from unittest.mock import patch
+from onepasswordconnectsdk import client
 
-VAULT_ID = "some_vault_id"
+VAULT_ID = "abcdefghijklmnopqrstuvwxyz"
+VAULT_NAME = "some_vault_name"
 HOST = "mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
@@ -36,6 +36,21 @@ def test_get_vault(mock):
     mock.return_value = response
 
     vault = SS_CLIENT.get_vault(VAULT_ID)
+    compare_vaults(expected_vault, vault)
+    mock.assert_called_with("GET", expected_path)
+
+@patch.object(Session, 'request')
+def test_get_vault_by_title(mock):
+    expected_vault = get_vault()
+    expected_path = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_NAME}\""
+
+    mock.return_value.ok = True
+    response = Response()
+    response.status_code = 200
+    response._content = json.dumps(expected_vault)
+    mock.return_value = response
+
+    vault = SS_CLIENT.get_vault_by_title(VAULT_NAME)
     compare_vaults(expected_vault, vault)
     mock.assert_called_with("GET", expected_path)
 
