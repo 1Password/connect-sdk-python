@@ -11,12 +11,11 @@ import onepasswordconnectsdk
 from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
-
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
 UUIDLength = 26
 
-class Client:
 
+class Client:
     PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
     NATIVE_TYPES_MAPPING = {
         "int": int,
@@ -268,7 +267,7 @@ class Client:
             )
 
         return self.deserialize(response.content, "Vault")
-    
+
     def get_vault_by_title(self, name: str):
         """Returns the vault with the given name
         
@@ -293,7 +292,7 @@ class Client:
                 f"Unable to retrieve vaults. Received {response.status_code} \
                      for {url} with message {response.json().get('message')}"
             )
-        
+
         if len(response.json()) != 1:
             raise FailedToRetrieveItemException(
                 f"Found {len(response.json())} vaults with \
@@ -509,8 +508,8 @@ class Client:
         """
         has_discriminator = False
         if (
-            hasattr(klass, "get_real_child_model")
-            and klass.discriminator_value_class_map
+                hasattr(klass, "get_real_child_model")
+                and klass.discriminator_value_class_map
         ):
             has_discriminator = True
 
@@ -519,9 +518,9 @@ class Client:
 
         kwargs = {}
         if (
-            data is not None
-            and klass.openapi_types is not None
-            and isinstance(data, (list, dict))
+                data is not None
+                and klass.openapi_types is not None
+                and isinstance(data, (list, dict))
         ):
             for attr, attr_type in six.iteritems(klass.openapi_types):
                 if klass.attribute_map[attr] in data:
@@ -535,7 +534,7 @@ class Client:
             if klass_name:
                 instance = self.__deserialize(data, klass_name)
         return instance
-    
+
     def _is_valid_UUID(self, uuid):
         if len(uuid) is not UUIDLength:
             return False
@@ -544,7 +543,8 @@ class Client:
             if valid is False:
                 return False
         return True
-            
+
+
 def new_client(url: str, token: str):
     """Builds a new client for interacting with 1Password Connect
     Parameters:
@@ -593,8 +593,10 @@ class OnePasswordConnectSDKError(RuntimeError):
 class EnvironmentTokenNotSetException(OnePasswordConnectSDKError, TypeError):
     pass
 
+
 class EnvironmentHostNotSetException(OnePasswordConnectSDKError, TypeError):
     pass
+
 
 class FailedToRetrieveItemException(OnePasswordConnectSDKError):
     pass
