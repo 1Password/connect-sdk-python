@@ -3,10 +3,10 @@ from requests import Session, Response
 from unittest.mock import patch
 from onepasswordconnectsdk import client, models
 
-VAULT_ID = "abcdefghijklmnopqrstuvwxyz"
-VAULT_TITLE = "some_vault_title"
-ITEM_ID = "zyxwvutsrqponmlkjihgfedcba"
-ITEM_TITLE = "some_item_title"
+VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
+VAULT_TITLE = "VaultA"
+ITEM_ID = "wepiqdxdzncjtnvmv5fegud4qy"
+ITEM_TITLE = "Test Login"
 HOST = "mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
@@ -19,7 +19,7 @@ def test_get_item_by_id(mock):
     mock.return_value.ok = True
     response = Response()
     response.status_code = 200
-    response._content = json.dumps(expected_item)
+    response._content = json.dumps(expected_item).encode("utf8")
     mock.return_value = response
 
     item = SS_CLIENT.get_item_by_id(ITEM_ID, VAULT_ID)
@@ -28,18 +28,26 @@ def test_get_item_by_id(mock):
 
 @patch.object(Session, 'request')
 def test_get_item_by_title(mock):
-    expected_items = get_items()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=name eq \"{ITEM_TITLE}\""
+    expected_item = get_item()
+    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
     mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_items)
-    mock.return_value = response
+
+    response_item_summary = Response()
+    response_item_summary.status_code = 200
+    response_item_summary._content = json.dumps(get_items()).encode("utf8")
+
+    response_item = Response()
+    response_item.status_code = 200
+    response_item._content = json.dumps(get_item()).encode("utf8")
+
+    mock.side_effect = [response_item_summary, response_item]
 
     item = SS_CLIENT.get_item_by_title(ITEM_TITLE, VAULT_ID)
-    compare_items(expected_items[0], item)
-    mock.assert_called_with("GET", expected_path)
+    compare_items(expected_item, item)
+    mock.assert_any_call("GET", expected_path_item_title)
+    mock.assert_called_with("GET", expected_path_item)
 
 @patch.object(Session, 'request')
 def test_get_item_item_id_vault_id(mock):
@@ -49,7 +57,7 @@ def test_get_item_item_id_vault_id(mock):
     mock.return_value.ok = True
     response = Response()
     response.status_code = 200
-    response._content = json.dumps(expected_item)
+    response._content = json.dumps(expected_item).encode("utf8")
     mock.return_value = response
 
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_ID)
@@ -59,43 +67,77 @@ def test_get_item_item_id_vault_id(mock):
 @patch.object(Session, 'request')
 def test_get_item_item_id_vault_title(mock):
     expected_item = get_item()
+    expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
     mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_item)
-    mock.return_value = response
+
+    response_vault = Response()
+    response_vault.status_code = 200
+    response_vault._content = json.dumps(get_vaults()).encode("utf8")
+
+    response_item = Response()
+    response_item.status_code = 200
+    response_item._content = json.dumps(expected_item).encode("utf8")
+
+    mock.side_effect = [response_vault, response_item]
 
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_TITLE)
     compare_items(expected_item, item)
+    mock.assert_any_call("GET", expected_path_vault_title)
+    mock.assert_called_with("GET", expected_path_item)
 
 @patch.object(Session, 'request')
 def test_get_item_item_title_vault_id(mock):
     expected_item = get_item()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=name eq \"{ITEM_TITLE}\""
+    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
     mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_item)
-    mock.return_value = response
+
+    response_item_summary = Response()
+    response_item_summary.status_code = 200
+    response_item_summary._content = json.dumps(get_items()).encode("utf8")
+
+    response_item = Response()
+    response_item.status_code = 200
+    response_item._content = json.dumps(get_item()).encode("utf8")
+
+    mock.side_effect = [response_item_summary, response_item]
 
     item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_ID)
     compare_items(expected_item, item)
-    mock.assert_called_with("GET", expected_path)
+    mock.assert_any_call("GET", expected_path_item_title)
+    mock.assert_called_with("GET", expected_path_item)
 
 @patch.object(Session, 'request')
 def test_get_item_item_title_vault_title(mock):
     expected_item = get_item()
+    expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
     mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_item)
-    mock.return_value = response
+
+    response_vault = Response()
+    response_vault.status_code = 200
+    response_vault._content = json.dumps(get_vaults()).encode("utf8")
+
+    response_item_summary = Response()
+    response_item_summary.status_code = 200
+    response_item_summary._content = json.dumps(get_items()).encode("utf8")
+
+    response_item = Response()
+    response_item.status_code = 200
+    response_item._content = json.dumps(get_item()).encode("utf8")
+
+    mock.side_effect = [response_vault, response_item_summary, response_item]
 
     item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_TITLE)
     compare_items(expected_item, item)
+    mock.assert_any_call("GET", expected_path_vault_title)
+    mock.assert_any_call("GET", expected_path_item_title)
+    mock.assert_called_with("GET", expected_path_item)
 
 @patch.object(Session, 'request')
 def test_get_items(mock):
@@ -105,7 +147,7 @@ def test_get_items(mock):
     mock.return_value.ok = True
     response = Response()
     response.status_code = 200
-    response._content = json.dumps(expected_items)
+    response._content = json.dumps(expected_items).encode("utf8")
     mock.return_value = response
 
     items = SS_CLIENT.get_items(VAULT_ID)
@@ -121,7 +163,7 @@ def test_delete_item(mock):
     mock.return_value.ok = True
     response = Response()
     response.status_code = 200
-    response._content = json.dumps(expected_items)
+    response._content = json.dumps(expected_items).encode("utf8")
     mock.return_value = response
 
     SS_CLIENT.delete_item(ITEM_ID, VAULT_ID)
@@ -194,7 +236,7 @@ def compare_summary_items(expected_item, returned_item):
 def compare_items(expected_item, returned_item):
     compare_summary_items(expected_item, returned_item)
     assert expected_item["lastEditedBy"] == returned_item.last_edited_by
-    
+
     assert len(expected_item["sections"]) == len(returned_item.sections)
     for i in range(len(expected_item["sections"])):
         compare_sections(expected_item["sections"][i], returned_item.sections[i])
@@ -218,7 +260,7 @@ def compare_sections(expected_section, returned_section):
 def get_items():
     return [{
         "id": "wepiqdxdzncjtnvmv5fegud4qy",
-        "title": "Example Login Default",
+        "title": "Test Login",
         "version": 21,
         "vault": {
             "id": "hfnjvi6aymbsnfc2xeeoheizda"
@@ -228,7 +270,7 @@ def get_items():
         "createdAt": "2020-10-29T17:52:17Z",
         "updatedAt": "2020-11-10T14:05:53Z"
     }]
-    
+
 def get_item():
     return {
     "id": "wepiqdxdzncjtnvmv5fegud4qy",
@@ -275,6 +317,18 @@ def get_item():
     "createdAt": "2020-10-29T17:52:17Z",
     "updatedAt": "2020-11-10T14:05:53Z"
 }
+
+def get_vaults():
+    return [
+        {
+            "id": "hfnjvi6aymbsnfc2xeeoheizda",
+            "name": "VaultA",
+            "attributeVersion": 2,
+            "contentVersion": 196,
+            "items": 2,
+            "type": "USER_CREATED",
+        }
+    ]
 
 def generate_full_item():
     item = models.Item(vault=models.ItemVault(id="av223f76ydutdngislnkbz6z5u"),
