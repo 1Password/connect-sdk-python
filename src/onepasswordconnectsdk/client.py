@@ -53,6 +53,54 @@ class Client:
         headers["Content-Type"] = "application/json"
         return headers
 
+    def get_file(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve item. Received {response.status_code}\
+                                     for {url} with message: {response.json().get('message')}"
+            )
+        return self.deserialize(response.content, "File")
+
+    def get_files(self, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files"
+
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve item. Received {response.status_code}\
+                             for {url} with message: {response.json().get('message')}"
+            )
+        return self.deserialize(response.content, "list[File]")
+
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
+
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveItemException(
+                f"Unable to retrieve items. Received {response.status_code} \
+                     for {url} with message: {response.json().get('message')}"
+            )
+        return response.content
+
+    def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
+        file_object = self.get_file(file_id, item_id, vault_id)
+        filename = file_object.name
+        content = self.get_file_content(file_id, item_id, vault_id)
+        global_path = os.path.join(path, filename)
+
+        file = open(global_path, "wb")
+        file.write(content)
+        file.close()
+
     def get_item(self, item: str, vault: str):
         """Get a specific item
 
