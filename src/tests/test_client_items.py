@@ -53,7 +53,7 @@ def test_get_item_by_title(mock):
 
 
 @patch.object(Session, 'request')
-def test_get_item_item_id_vault_id(mock):
+def test_get_item_by_item_id_vault_id(mock):
     expected_item = get_item()
     expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
@@ -69,7 +69,7 @@ def test_get_item_item_id_vault_id(mock):
 
 
 @patch.object(Session, 'request')
-def test_get_item_item_id_vault_title(mock):
+def test_get_item_by_item_id_vault_title(mock):
     expected_item = get_item()
     expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
     expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
@@ -93,7 +93,7 @@ def test_get_item_item_id_vault_title(mock):
 
 
 @patch.object(Session, 'request')
-def test_get_item_item_title_vault_id(mock):
+def test_get_item_by_item_title_vault_id(mock):
     expected_item = get_item()
     expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
     expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
@@ -117,7 +117,7 @@ def test_get_item_item_title_vault_id(mock):
 
 
 @patch.object(Session, 'request')
-def test_get_item_item_title_vault_title(mock):
+def test_get_item_by_item_title_vault_title(mock):
     expected_item = get_item()
     expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
     expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
