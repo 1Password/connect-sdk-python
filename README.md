@@ -1,5 +1,10 @@
 # 1Password Connect Python SDK
 
+[![Python](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue)](https://www.python.org)
+[![PyPI version](https://badge.fury.io/py/onepasswordconnectsdk.svg)](https://badge.fury.io/py/onepasswordconnectsdk)
+![CI](https://github.com/1Password/connect-sdk-python/workflows/Test/badge.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://en.wikipedia.org/wiki/MIT_License)
+
 The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://support.1password.com/secrets-automation/) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
 ## Prerequisites
