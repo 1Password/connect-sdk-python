@@ -1,5 +1,7 @@
 # 1Password Connect Python SDK
 
+[![codecov](https://codecov.io/gh/1Password/connect-sdk-python/branch/main/graph/badge.svg?token=VBPCH0CU2E)](https://codecov.io/gh/1Password/connect-sdk-python)
+
 The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://support.1password.com/secrets-automation/) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
 ## Prerequisites
