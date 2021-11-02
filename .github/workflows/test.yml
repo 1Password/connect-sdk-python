@@ -1,7 +1,10 @@
 name: Tests
 permissions:
   contents: read
-on: push
+on: 
+  push: 
+    branches: main 
+  pull_request:
 
 jobs:
   test:
@@ -27,3 +30,4 @@ jobs:
         with:
           fail_ci_if_error: true
           files: ./coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
