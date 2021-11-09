@@ -1,0 +1,43 @@
+name: Release SDK if needed
+
+on:
+  pull_request:
+    branches: main
+    types: closed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Build the package
+        run: poetry build --format sdist
+      - name: Publish to PyPi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Create Release tag
+        id: create-tag
+        run: |
+          release_tag=$(echo ${{ github.event.pull_request.head.ref }} | cut -d "/" -f2)
+          echo "::set-output name=release-tag::$release_tag"
+      - name: Make new release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.create-tag.outputs.release-tag }}
+          commit: main
+          body: ${{ github.event.pull_request.body }}
