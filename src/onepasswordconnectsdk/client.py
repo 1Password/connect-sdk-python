@@ -12,6 +12,7 @@ from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
+UUIDLength = 26
 
 
 class Client:
@@ -42,10 +43,9 @@ class Client:
 
     def build_headers(self):
         """Builds the headers needed to make a request to the server
-        Parameters:
 
         Returns:
-        dict: The 1Password Connect API request headers
+            dict: The 1Password Connect API request headers
         """
 
         headers = {}
@@ -101,14 +101,43 @@ class Client:
         file.write(content)
         file.close()
 
-    def get_item(self, item_id: str, vault_id: str):
-        """Get a specific item by uuid
-        Parameters:
-        item_id (str): The id of the item to be fetched
-        vault_id (str): The id of the vault in which to get the item from
+    def get_item(self, item: str, vault: str):
+        """Get a specific item
+
+        Args:
+            item (str): the id or title of the item to be fetched
+            vault (str): the id or name of the vault in which to get the item from
+
+        Raises:
+            FailedToRetrieveItemException: Thrown when a HTTP error is returned
+            from the 1Password Connect API
 
         Returns:
-        Item object: The found item
+            Item object: The found item
+        """
+
+        vault_id = vault
+        if not self._is_valid_UUID(vault):
+            vault_id = self.get_vault_by_title(vault).id
+
+        if self._is_valid_UUID(item):
+            return self.get_item_by_id(item, vault_id)
+        else:
+            return self.get_item_by_title(item, vault_id)
+
+    def get_item_by_id(self, item_id: str, vault_id: str):
+        """Get a specific item by uuid
+       
+        Args:
+            item_id (str): The id of the item to be fetched
+            vault_id (str): The id of the vault in which to get the item from
+
+        Raises:
+            FailedToRetrieveItemException: Thrown when a HTTP error is returned
+            from the 1Password Connect API
+
+        Returns:
+            Item object: The found item
         """
         url = f"/v1/vaults/{vault_id}/items/{item_id}"
 
@@ -124,12 +153,17 @@ class Client:
 
     def get_item_by_title(self, title: str, vault_id: str):
         """Get a specific item by title
-        Parameters:
-        title (str): The title of the item to be fetched
-        vault_id (str): The id of the vault in which to get the item from
+        
+        Args:
+            title (str): The title of the item to be fetched
+            vault_id (str): The id of the vault in which to get the item from
+
+        Raises:
+            FailedToRetrieveItemException: Thrown when a HTTP error is returned
+            from the 1Password Connect API
 
         Returns:
-        Item object: A summary of the found item
+            Item object: The found item
         """
         filter_query = f'title eq "{title}"'
         url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
@@ -149,7 +183,8 @@ class Client:
                     title {title}"
             )
 
-        return self.deserialize(response.content, "list[SummaryItem]")[0]
+        item_summary = self.deserialize(response.content, "list[SummaryItem]")[0]
+        return self.get_item_by_id(item_summary.id, vault_id)
 
     def get_items(self, vault_id: str):
         """Returns a list of item summaries for the specified vault
@@ -280,6 +315,39 @@ class Client:
             )
 
         return self.deserialize(response.content, "Vault")
+
+    def get_vault_by_title(self, name: str):
+        """Returns the vault with the given name
+        
+        Args:
+            name (str): The name of the vault in which to fetch
+        
+        Raises:
+            FailedToRetrieveVaultException: Thrown when a HTTP error is
+            returned from the 1Password Connect API
+
+        Returns:
+            Vault: The specified vault
+        """
+        filter_query = f'name eq "{name}"'
+        url = f"/v1/vaults?filter={filter_query}"
+
+        response = self.build_request("GET", url)
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise FailedToRetrieveVaultException(
+                f"Unable to retrieve vaults. Received {response.status_code} \
+                     for {url} with message {response.json().get('message')}"
+            )
+
+        if len(response.json()) != 1:
+            raise FailedToRetrieveItemException(
+                f"Found {len(response.json())} vaults with \
+                    name {name}"
+            )
+
+        return self.deserialize(response.content, "list[Vault]")[0]
 
     def get_vaults(self):
         """Returns all vaults for service account set in client
@@ -514,6 +582,15 @@ class Client:
             if klass_name:
                 instance = self.__deserialize(data, klass_name)
         return instance
+
+    def _is_valid_UUID(self, uuid):
+        if len(uuid) is not UUIDLength:
+            return False
+        for c in uuid:
+            valid = (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9')
+            if valid is False:
+                return False
+        return True
 
 
 def new_client(url: str, token: str):

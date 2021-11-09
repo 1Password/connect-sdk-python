@@ -168,12 +168,8 @@ def _set_values_for_item(
     config_dict={},
     config_object: object = None,
 ):
-    # Retrieves a summary item
-    summary_item: Item = client.get_item_by_title(
-        parsed_item.item_title, parsed_item.vault_uuid
-    )
     # Fetching the full item
-    item: Item = client.get_item(summary_item.id, parsed_item.vault_uuid)
+    item: Item = client.get_item(parsed_item.item_title, parsed_item.vault_uuid)
 
     sections = _convert_sections_to_dict(item.sections)
 
