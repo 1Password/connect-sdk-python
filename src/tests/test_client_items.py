@@ -263,18 +263,18 @@ def compare_items(expected_item, returned_item):
 
 
 def compare_fields(expected_field, returned_field):
-    assert expected_field["id"] == returned_field.id
-    assert expected_field["label"] == returned_field.label
-    assert expected_field["value"] == returned_field.value
-    assert expected_field["purpose"] == returned_field.purpose
-    assert expected_field["section"]["id"] == returned_field.section.id
-    assert expected_field["type"] == returned_field.type
-    assert expected_field["totp"] == returned_field.totp
+    assert expected_field.get("id") == returned_field.id
+    assert expected_field.get("label") == returned_field.label
+    assert expected_field.get("value") == returned_field.value
+    assert expected_field.get("purpose") == returned_field.purpose
+    assert expected_field.get("section").get("id") == returned_field.section.id
+    assert expected_field.get("type") == returned_field.type
+    assert expected_field.get("totp") == returned_field.totp
 
 
 def compare_sections(expected_section, returned_section):
-    assert expected_section["id"] == returned_section.id
-    assert expected_section["label"] == returned_section.label
+    assert expected_section.get("id") == returned_section.id
+    assert expected_section.get("label") == returned_section.label
 
 
 def get_items():

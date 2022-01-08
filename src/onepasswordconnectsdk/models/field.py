@@ -51,7 +51,7 @@ class Field(object):
         'value': 'value',
         'generate': 'generate',
         'entropy': 'entropy',
-        'totp': 'str'
+        'totp': 'totp'
     }
 
     def __init__(self, id=None, section=None, type='STRING', purpose=None, label=None, value=None, generate=False, entropy=None, totp=None):  # noqa: E501
@@ -63,8 +63,8 @@ class Field(object):
         self._value = None
         self._generate = None
         self._entropy = None
+        self._totp = None
         self.discriminator = None
-        self.totp = None
 
         self.id = id
         if section is not None:
@@ -279,6 +279,7 @@ class Field(object):
         :return: The TOTP of the Field. # noqa: E501
         :rtype: str
         """
+        return self._totp
     
     @totp.setter
     def totp(self, totp):
