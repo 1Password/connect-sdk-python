@@ -269,6 +269,7 @@ def compare_fields(expected_field, returned_field):
     assert expected_field["purpose"] == returned_field.purpose
     assert expected_field["section"]["id"] == returned_field.section.id
     assert expected_field["type"] == returned_field.type
+    assert expected_field["totp"] == returned_field.totp
 
 
 def compare_sections(expected_section, returned_section):
@@ -331,6 +332,16 @@ def get_item():
                 "type": "STRING",
                 "label": "something",
                 "value": "test"
+            },
+            {
+                "id": "TOTP_acf2fgvsa312c9sd4vs8jhkli",
+                "section": {
+                    "id": "Section_47DC4DDBF26640AB8B8618DA36D5A492"
+                },
+                "type": "OTP",
+                "label": "one-time password",
+                "value": "otpauth://totp=testop?secret=test",
+                "totp": "134253"
             }
         ],
         "lastEditedBy": "DOIHOHSV2NHK5HMSOLCWJUXFDM",
