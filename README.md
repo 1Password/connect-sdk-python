@@ -183,7 +183,7 @@ values_dict = onepasswordconnectsdk.load_dict(client, CONFIG)
 ```
 
 ```python
-# example class configuration for onepasswordconnectsdk.load(CONFIG)
+# example class configuration for onepasswordconnectsdk.load(client, CONFIG)
 class Config:
     server: 'opitem:"My database item" opvault:some_vault_id opfield:specific_section.hostname' = None
     database: 'opitem:"My database item" opfield:.database' = None
@@ -192,7 +192,7 @@ class Config:
 
 CONFIG = Config()
 
-values_object = onepasswordconnectsdk.load(CONFIG)
+values_object = onepasswordconnectsdk.load(client, CONFIG)
 ```
 
 ## Development
