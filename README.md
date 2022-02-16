@@ -158,7 +158,7 @@ Users can create `classes` or `dicts` that describe fields they wish to get the 
 - **load**: Takes an object with class attributes annotated with tags describing where to find desired fields in 1Password. Manipulates given object and fills attributes in with 1Password item field values.
 
 ```python
-# example dict configuration for onepasswordconnectsdk.load_dict(CONFIG)
+# example dict configuration for onepasswordconnectsdk.load_dict(client, CONFIG)
 CONFIG = {
     "server": {
         "opitem": "My database item",
@@ -179,11 +179,11 @@ CONFIG = {
     },
 }
 
-values_dict = onepasswordconnectsdk.load_dict(CONFIG)
+values_dict = onepasswordconnectsdk.load_dict(client, CONFIG)
 ```
 
 ```python
-# example class configuration for onepasswordconnectsdk.load(CONFIG)
+# example class configuration for onepasswordconnectsdk.load(client, CONFIG)
 class Config:
     server: 'opitem:"My database item" opvault:some_vault_id opfield:specific_section.hostname' = None
     database: 'opitem:"My database item" opfield:.database' = None
@@ -192,7 +192,7 @@ class Config:
 
 CONFIG = Config()
 
-values_object = onepasswordconnectsdk.load(CONFIG)
+values_object = onepasswordconnectsdk.load(client, CONFIG)
 ```
 
 ## Development
