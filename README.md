@@ -150,6 +150,29 @@ Retrieve all vaults available to the service account:
 client.get_vaults()
 ```
 
+**List Files**
+List summary information on all files stored in a given item, including file ids.
+
+```python
+client.get_files("{item_id}", "{vault_id}")
+```
+
+**Get File Details**
+
+Get details on a specific file.
+
+```python
+client.get_file("{file_id}", "{item_id}", "{vault_id}")
+```
+
+**Download File**
+
+Returns the contents of a given file.
+
+```python
+client.download_file("{file_id}", "{item_id}", "{vault_id}", "{content_path}")
+```
+
 **Load Configuration**
 
 Users can create `classes` or `dicts` that describe fields they wish to get the values from in 1Password. Two convienience methods are provided that will handle the fetching of values for these fields:
