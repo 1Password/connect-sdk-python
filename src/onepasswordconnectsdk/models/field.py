@@ -38,7 +38,8 @@ class Field(object):
         'label': 'str',
         'value': 'str',
         'generate': 'bool',
-        'entropy': 'float'
+        'entropy': 'float',
+        'totp': 'str'
     }
 
     attribute_map = {
@@ -49,10 +50,11 @@ class Field(object):
         'label': 'label',
         'value': 'value',
         'generate': 'generate',
-        'entropy': 'entropy'
+        'entropy': 'entropy',
+        'totp': 'totp'
     }
 
-    def __init__(self, id=None, section=None, type='STRING', purpose=None, label=None, value=None, generate=False, entropy=None):  # noqa: E501
+    def __init__(self, id=None, section=None, type='STRING', purpose=None, label=None, value=None, generate=False, entropy=None, totp=None):  # noqa: E501
         self._id = None
         self._section = None
         self._type = None
@@ -61,6 +63,7 @@ class Field(object):
         self._value = None
         self._generate = None
         self._entropy = None
+        self._totp = None
         self.discriminator = None
 
         self.id = id
@@ -78,6 +81,8 @@ class Field(object):
             self.generate = generate
         if entropy is not None:
             self.entropy = entropy
+        if totp is not None:
+            self.totp = totp
 
     @property
     def id(self):
@@ -264,6 +269,29 @@ class Field(object):
         """
 
         self._entropy = entropy
+    
+    @property
+    def totp(self):
+        """Gets the TOTP. # noqa: E501
+        
+        For fields of type 'OTP' this is the one-time password code # noqa: E501
+
+        :return: The TOTP of the Field. # noqa: E501
+        :rtype: str
+        """
+        return self._totp
+    
+    @totp.setter
+    def totp(self, totp):
+        """Sets the totp of this Field.
+
+        For fields of type 'OTP' this is the one-time password code # noqa: E501
+
+        :param totp: The TOTP of this Field.  # noqa: E501
+        :type: str
+        """
+
+        self._totp = totp
 
     def to_dict(self):
         """Returns the model properties as a dict"""
