@@ -31,8 +31,10 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Create Release tag
         id: create-tag
+        env:
+          PR_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          release_tag=$(echo ${{ github.event.pull_request.head.ref }} | cut -d "/" -f2)
+          release_tag=$(echo "$PR_REF" | cut -d "/" -f2)
           echo "::set-output name=release-tag::$release_tag"
       - name: Make new release
         uses: ncipollo/release-action@v1
