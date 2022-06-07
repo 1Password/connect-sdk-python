@@ -24,7 +24,7 @@ jobs:
           pip install poetry
           poetry install
       - name: Build the package
-        run: poetry build --format sdist
+        run: poetry build
       - name: Publish to PyPi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
