@@ -193,17 +193,20 @@ def _set_values_for_item(
                 section_id = field.section.id
             except AttributeError:
                 section_id = None
+                
+            if field.label == path_parts[1]:
+                if (
+                    section_id is None
+                    or (section_id == sections.get(path_parts[0]))
+                    or path_parts[0] in sections.values()
+                ):
+                    value_found = True
 
-            if field.label == path_parts[1] and (
-                section_id is None or section_id == sections[path_parts[0]]
-            ):
-                value_found = True
-
-                if config_object:
-                    setattr(config_object, parsed_field.name, field.value)
-                else:
-                    config_dict[parsed_field.name] = field.value
-                break
+                    if config_object:
+                        setattr(config_object, parsed_field.name, field.value)
+                    else:
+                        config_dict[parsed_field.name] = field.value
+                    break
         if not value_found:
             raise UnknownSectionAndFieldTag(
                 f"There is no section {path_parts[0]} \
@@ -214,6 +217,7 @@ def _set_values_for_item(
 def _convert_sections_to_dict(sections: List[Section]):
     if not sections:
         return {}
+
     section_dict = {section.label: section.id for section in sections}
     return section_dict
 
