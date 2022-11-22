@@ -144,7 +144,7 @@ class Field(object):
         :param type: The type of this Field.  # noqa: E501
         :type: str
         """
-        allowed_values = ["STRING", "EMAIL", "CONCEALED", "URL", "OTP", "DATE", "MONTH_YEAR", "MENU"]  # noqa: E501
+        allowed_values = ["STRING", "EMAIL", "CONCEALED", "URL", "OTP", "DATE", "MONTH_YEAR", "MENU", "REFERENCE"]  # noqa: E501
         if type not in allowed_values:  # noqa: E501
             raise ValueError(
                 "Invalid value for `type` ({0}), must be one of {1}"  # noqa: E501
