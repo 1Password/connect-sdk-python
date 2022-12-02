@@ -182,13 +182,6 @@ class SummaryItem(object):
         :param category: The category of this Item.  # noqa: E501
         :type: str
         """
-        allowed_values = ["LOGIN", "PASSWORD", "SERVER", "DATABASE", "CREDIT_CARD", "MEMBERSHIP", "PASSPORT", "SOFTWARE_LICENSE", "OUTDOOR_LICENSE", "SECURE_NOTE", "WIRELESS_ROUTER", "BANK_ACCOUNT", "DRIVER_LICENSE", "IDENTITY", "REWARD_PROGRAM", "DOCUMENT", "EMAIL_ACCOUNT", "SOCIAL_SECURITY_NUMBER", "API_CREDENTIAL", "CUSTOM"]  # noqa: E501
-        if category not in allowed_values:  # noqa: E501
-            raise ValueError(
-                "Invalid value for `category` ({0}), must be one of {1}"  # noqa: E501
-                .format(category, allowed_values)
-            )
-
         self._category = category
 
     @property
