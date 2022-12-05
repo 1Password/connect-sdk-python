@@ -1,18 +1,30 @@
-[//]: # "START/LATEST"
-
+[//]: # (START/LATEST)
 # Latest
 
 ## Features
+  * A user-friendly description of a new feature. {issue-number}
 
-- A user-friendly description of a new feature. {issue-number}
+## Fixes
+ * A user-friendly description of a fix. {issue-number}
+
+## Security
+ * A user-friendly description of a security fix. {issue-number}
+
+---
+
+[//]: # "START/v1.3.0"
+
+# v1.3.0
+
+## Features
+
+- The TOTP code of a TOTP field can now be accessed using the `.totp` property of a field. {#33}
+- Release of the SDK also includes `wheel` format. {#45}
 
 ## Fixes
 
-- A user-friendly description of a fix. {issue-number}
-
-## Security
-
-- A user-friendly description of a security fix. {issue-number}
+- Sections without a label can now be correctly accessed. {#49}
+- Retrieving an item no longer returns "Invalid value for `type`" or "Invalid value for `category`" when retrieving an item with a field type or item category that is not defined in the SDK. {#52,#54}
 
 ---
 
