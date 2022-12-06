@@ -19,7 +19,6 @@
 ## Features
 
 - The TOTP code of a OTP field can now be accessed using the `.totp` property of a field. {#33}
-- Release of the SDK also includes `wheel` format. {#45}
 
 ## Fixes
 
