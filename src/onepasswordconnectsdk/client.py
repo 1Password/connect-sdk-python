@@ -3,7 +3,6 @@ from dateutil.parser import parse
 import json
 import os
 import re
-import six
 import requests
 import datetime
 from requests.exceptions import HTTPError
@@ -16,10 +15,9 @@ UUIDLength = 26
 
 
 class Client:
-    PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
+    PRIMITIVE_TYPES = (float, bool, bytes, str, int)
     NATIVE_TYPES_MAPPING = {
         "int": int,
-        "long": int if six.PY3 else long,  # type: ignore # noqa: F821
         "float": float,
         "str": str,
         "bool": bool,
@@ -443,13 +441,13 @@ class Client:
             # model definition for request.
             obj_dict = {
                 obj.attribute_map[attr]: getattr(obj, attr)
-                for attr, _ in six.iteritems(obj.openapi_types)
+                for attr in obj.openapi_types.keys()
                 if getattr(obj, attr) is not None
             }
 
         return {
             key: self.sanitize_for_serialization(val)
-            for key, val in six.iteritems(obj_dict)
+            for key, val in obj_dict.items()
         }
 
     def __deserialize(self, data, klass):
@@ -471,7 +469,7 @@ class Client:
             if klass.startswith("dict("):
                 sub_kls = re.match(r"dict\(([^,]*), (.*)\)", klass).group(2)
                 return {
-                    k: self.__deserialize(v, sub_kls) for k, v in six.iteritems(data)  # noqa: E501
+                    k: self.__deserialize(v, sub_kls) for k, v in data.items()  # noqa: E501
                 }
 
             # convert str to class
@@ -502,7 +500,7 @@ class Client:
         try:
             return klass(data)
         except UnicodeEncodeError:
-            return six.text_type(data)
+            return str(data)
         except TypeError:
             return data
 
@@ -570,7 +568,7 @@ class Client:
                 and klass.openapi_types is not None
                 and isinstance(data, (list, dict))
         ):
-            for attr, attr_type in six.iteritems(klass.openapi_types):
+            for attr, attr_type in klass.openapi_types.items():
                 if klass.attribute_map[attr] in data:
                     value = data[klass.attribute_map[attr]]
                     kwargs[attr] = self.__deserialize(value, attr_type)
