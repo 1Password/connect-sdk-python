@@ -1,8 +1,6 @@
 import pprint
 import re  # noqa: F401
 
-import six
-
 
 class File(object):
     openapi_types = {
@@ -71,7 +69,7 @@ class File(object):
         """Returns the model properties as a dict"""
         result = {}
 
-        for attr, _ in six.iteritems(self.openapi_types):
+        for attr in self.openapi_types.keys():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(map(
