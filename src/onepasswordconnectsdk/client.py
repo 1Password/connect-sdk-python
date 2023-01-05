@@ -1,11 +1,11 @@
 """Python Client for connecting to 1Password Connect"""
+import httpx
+from httpx import HTTPError
 from dateutil.parser import parse
 import json
 import os
 import re
-import requests
 import datetime
-from requests.exceptions import HTTPError
 import onepasswordconnectsdk
 from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
@@ -28,28 +28,12 @@ class Client:
 
     """Python Client Class"""
 
-    def __init__(self, url: str, token: str):
+    def __init__(self, session):
         """Initialize client"""
-        self.url = url
-        self.token = token
-        self.session = self.create_session()
+        self.session = session
 
-    def create_session(self):
-        session = requests.Session()
-        session.headers.update(self.build_headers())
-        return session
-
-    def build_headers(self):
-        """Builds the headers needed to make a request to the server
-
-        Returns:
-            dict: The 1Password Connect API request headers
-        """
-
-        headers = {}
-        headers["Authorization"] = f"Bearer {self.token}"
-        headers["Content-Type"] = "application/json"
-        return headers
+    def __del__(self):
+        self.session.close()
 
     def get_file(self, file_id: str, item_id: str, vault_id: str):
         url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
@@ -250,7 +234,7 @@ class Client:
 
         url = f"/v1/vaults/{vault_id}/items"
 
-        response: requests.Response = self.build_request("POST", url, item)
+        response = self.build_request("POST", url, item)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -279,7 +263,7 @@ class Client:
         item.id = item_uuid
         item.vault = ItemVault(id=vault_id)
 
-        response: requests.Response = self.build_request("PUT", url, item)
+        response = self.build_request("PUT", url, item)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -380,13 +364,12 @@ class Client:
         Returns:
         Response object: The request response
         """
-        url = f"{self.url}{path}"
 
         if body:
             serialized_body = json.dumps(self.sanitize_for_serialization(body))
-            response = self.session.request(method, url, data=serialized_body)
+            response = self.session.request(method, path, data=serialized_body)
         else:
-            response = self.session.request(method, url)
+            response = self.session.request(method, path)
         return response
 
     def deserialize(self, response, response_type):
@@ -591,7 +574,20 @@ class Client:
         return True
 
 
-def new_client(url: str, token: str):
+class AsyncClient:
+    pass
+
+
+def build_headers(token: str):
+    """Builds the headers needed to make a request to the server
+
+    Returns:
+        dict: The 1Password Connect API request headers
+    """
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+
+def new_client(url: str, token: str, is_async: bool = False):
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
@@ -600,7 +596,13 @@ def new_client(url: str, token: str):
     Returns:
     Client: The 1Password Connect client
     """
-    return Client(url=url, token=token)
+    headers = build_headers(token)
+    if is_async:
+        session = httpx.AsyncClient(base_url=url, headers=headers)
+        return AsyncClient(session=session)
+
+    session = httpx.Client(base_url=url, headers=headers)
+    return Client(session=session)
 
 
 def new_client_from_environment(url: str = None):

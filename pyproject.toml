@@ -13,8 +13,8 @@ repository = "https://github.com/1Password/connect-sdk-python"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-requests = "^2.24.0"
 python-dateutil = "^2.8.1"
+httpx = "^0.23.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.0"
