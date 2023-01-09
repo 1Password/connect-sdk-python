@@ -1,3 +1,4 @@
+import pytest
 from httpx import Response
 from onepasswordconnectsdk import client, models
 
@@ -8,6 +9,7 @@ ITEM_TITLE = "Test Login"
 HOST = "https://mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
+SS_CLIENT_ASYNC = client.new_client(HOST, TOKEN, True)
 
 
 def test_get_item_by_id(respx_mock):
@@ -17,6 +19,18 @@ def test_get_item_by_id(respx_mock):
     mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item_by_id(ITEM_ID, VAULT_ID)
+    compare_items(expected_item, item)
+    assert mock.called
+
+
+@pytest.mark.asyncio
+async def test_get_item_by_id_async(respx_mock):
+    expected_item = get_item()
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item_by_id(ITEM_ID, VAULT_ID)
     compare_items(expected_item, item)
     assert mock.called
 
@@ -35,6 +49,21 @@ def test_get_item_by_title(respx_mock):
     assert item_mock.called
 
 
+@pytest.mark.asyncio
+async def test_get_item_by_title_async(respx_mock):
+    expected_item = get_item()
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    items_summary_mock = respx_mock.get(expected_path_item_title).mock(return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item_by_title(ITEM_TITLE, VAULT_ID)
+    compare_items(expected_item, item)
+    assert items_summary_mock.called
+    assert item_mock.called
+
+
 def test_get_item_by_item_id_vault_id(respx_mock):
     expected_item = get_item()
     expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
@@ -42,6 +71,18 @@ def test_get_item_by_item_id_vault_id(respx_mock):
     mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_ID)
+    compare_items(expected_item, item)
+    assert mock.called
+
+
+@pytest.mark.asyncio
+async def test_get_item_by_item_id_vault_id_async(respx_mock):
+    expected_item = get_item()
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item(ITEM_ID, VAULT_ID)
     compare_items(expected_item, item)
     assert mock.called
 
@@ -61,6 +102,22 @@ def test_get_item_by_item_id_vault_title(respx_mock):
     assert item_mock.called
 
 
+@pytest.mark.asyncio
+async def test_get_item_by_item_id_vault_title_async(respx_mock):
+    expected_item = get_item()
+    expected_path_vault_title = f"/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    vaults_by_title_mock = respx_mock.get(expected_path_vault_title).mock(
+        return_value=Response(200, json=get_vaults()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item(ITEM_ID, VAULT_TITLE)
+    compare_items(expected_item, item)
+    assert vaults_by_title_mock.called
+    assert item_mock.called
+
+
 def test_get_item_by_item_title_vault_id(respx_mock):
     expected_item = get_item()
     expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
@@ -71,6 +128,22 @@ def test_get_item_by_item_title_vault_id(respx_mock):
     item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_ID)
+    compare_items(expected_item, item)
+    assert items_by_title_mock.called
+    assert item_mock.called
+
+
+@pytest.mark.asyncio
+async def test_get_item_by_item_title_vault_id_async(respx_mock):
+    expected_item = get_item()
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    items_by_title_mock = respx_mock.get(expected_path_item_title).mock(
+        return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item(ITEM_TITLE, VAULT_ID)
     compare_items(expected_item, item)
     assert items_by_title_mock.called
     assert item_mock.called
@@ -95,6 +168,26 @@ def test_get_item_by_item_title_vault_title(respx_mock):
     assert item_mock.called
 
 
+@pytest.mark.asyncio
+async def test_get_item_by_item_title_vault_title_async(respx_mock):
+    expected_item = get_item()
+    expected_path_vault_title = f"/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    vaults_by_title_mock = respx_mock.get(expected_path_vault_title).mock(
+        return_value=Response(200, json=get_vaults()))
+    items_by_title_mock = respx_mock.get(expected_path_item_title).mock(
+        return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
+
+    item = await SS_CLIENT_ASYNC.get_item(ITEM_TITLE, VAULT_TITLE)
+    compare_items(expected_item, item)
+    assert vaults_by_title_mock.called
+    assert items_by_title_mock.called
+    assert item_mock.called
+
+
 def test_get_items(respx_mock):
     expected_items = get_items()
     expected_path = f"/v1/vaults/{VAULT_ID}/items"
@@ -102,6 +195,19 @@ def test_get_items(respx_mock):
     mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_items))
 
     items = SS_CLIENT.get_items(VAULT_ID)
+    assert len(expected_items) == len(items)
+    compare_summary_items(expected_items[0], items[0])
+    assert mock.called
+
+
+@pytest.mark.asyncio
+async def test_get_items_async(respx_mock):
+    expected_items = get_items()
+    expected_path = f"/v1/vaults/{VAULT_ID}/items"
+
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_items))
+
+    items = await SS_CLIENT_ASYNC.get_items(VAULT_ID)
     assert len(expected_items) == len(items)
     compare_summary_items(expected_items[0], items[0])
     assert mock.called
@@ -117,6 +223,18 @@ def test_delete_item(respx_mock):
     assert mock.called
 
 
+@pytest.mark.asyncio
+async def test_delete_item_async(respx_mock):
+    expected_items = get_items()
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    mock = respx_mock.delete(expected_path).mock(return_value=Response(200, json=expected_items))
+
+    await SS_CLIENT_ASYNC.delete_item(ITEM_ID, VAULT_ID)
+    assert mock.called
+
+
+
 def test_create_item(respx_mock):
     item = generate_full_item()
     mock = respx_mock.post(f"/v1/vaults/{item.vault.id}/items").mock(return_value=Response(201, json=item.to_dict()))
@@ -126,11 +244,31 @@ def test_create_item(respx_mock):
     compare_full_items(item, created_item)
 
 
+@pytest.mark.asyncio
+async def test_create_item_async(respx_mock):
+    item = generate_full_item()
+    mock = respx_mock.post(f"/v1/vaults/{item.vault.id}/items").mock(return_value=Response(201, json=item.to_dict()))
+
+    created_item = await SS_CLIENT_ASYNC.create_item(item.vault.id, item)
+    assert mock.called
+    compare_full_items(item, created_item)
+
+
 def test_update_item(respx_mock):
     item = generate_full_item()
     mock = respx_mock.put(f"/v1/vaults/{item.vault.id}/items/{item.id}").mock(return_value=Response(200, json=item.to_dict()))
 
     updated_item = SS_CLIENT.update_item(item.id, item.vault.id, item)
+    assert mock.called
+    compare_full_items(item, updated_item)
+
+
+@pytest.mark.asyncio
+async def test_update_item_async(respx_mock):
+    item = generate_full_item()
+    mock = respx_mock.put(f"/v1/vaults/{item.vault.id}/items/{item.id}").mock(return_value=Response(200, json=item.to_dict()))
+
+    updated_item = await SS_CLIENT_ASYNC.update_item(item.id, item.vault.id, item)
     assert mock.called
     compare_full_items(item, updated_item)
 

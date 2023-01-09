@@ -441,12 +441,13 @@ class AsyncClient:
 
         vault_id = vault
         if not is_valid_uuid(vault):
-            vault_id = self.get_vault_by_title(vault).id
+            vault = await self.get_vault_by_title(vault)
+            vault_id = vault.id
 
         if is_valid_uuid(item):
-            return self.get_item_by_id(item, vault_id)
+            return await self.get_item_by_id(item, vault_id)
         else:
-            return self.get_item_by_title(item, vault_id)
+            return await self.get_item_by_title(item, vault_id)
 
     async def get_item_by_id(self, item_id: str, vault_id: str):
         """Get a specific item by uuid
