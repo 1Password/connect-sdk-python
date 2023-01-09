@@ -16,6 +16,7 @@ from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
+ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 
 
 class Client:
@@ -753,6 +754,7 @@ def new_client_from_environment(url: str = None):
     Client: The 1Password Connect client
     """
     token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
+    is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
 
     if url is None:
         url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
@@ -767,4 +769,4 @@ def new_client_from_environment(url: str = None):
             f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
         )
 
-    return Client(url=url, token=token)
+    return new_client(url, token, is_async)

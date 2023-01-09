@@ -1,203 +1,136 @@
-import json
-from requests import Session, Response
-from unittest.mock import patch
+from httpx import Response
 from onepasswordconnectsdk import client, models
 
 VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
 VAULT_TITLE = "VaultA"
 ITEM_ID = "wepiqdxdzncjtnvmv5fegud4qy"
 ITEM_TITLE = "Test Login"
-HOST = "mock_host"
+HOST = "https://mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_id(mock):
+def test_get_item_by_id(respx_mock):
     expected_item = get_item()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_item).encode("utf8")
-    mock.return_value = response
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item_by_id(ITEM_ID, VAULT_ID)
     compare_items(expected_item, item)
-    mock.assert_called_with("GET", expected_path)
+    assert mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_title(mock):
+def test_get_item_by_title(respx_mock):
     expected_item = get_item()
-    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
-    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-
-    response_item_summary = Response()
-    response_item_summary.status_code = 200
-    response_item_summary._content = json.dumps(get_items()).encode("utf8")
-
-    response_item = Response()
-    response_item.status_code = 200
-    response_item._content = json.dumps(get_item()).encode("utf8")
-
-    mock.side_effect = [response_item_summary, response_item]
+    items_summary_mock = respx_mock.get(expected_path_item_title).mock(return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item_by_title(ITEM_TITLE, VAULT_ID)
     compare_items(expected_item, item)
-    mock.assert_any_call("GET", expected_path_item_title)
-    mock.assert_called_with("GET", expected_path_item)
+    assert items_summary_mock.called
+    assert item_mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_item_id_vault_id(mock):
+def test_get_item_by_item_id_vault_id(respx_mock):
     expected_item = get_item()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_item).encode("utf8")
-    mock.return_value = response
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_ID)
     compare_items(expected_item, item)
-    mock.assert_called_with("GET", expected_path)
+    assert mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_item_id_vault_title(mock):
+def test_get_item_by_item_id_vault_title(respx_mock):
     expected_item = get_item()
-    expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
-    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path_vault_title = f"/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-
-    response_vault = Response()
-    response_vault.status_code = 200
-    response_vault._content = json.dumps(get_vaults()).encode("utf8")
-
-    response_item = Response()
-    response_item.status_code = 200
-    response_item._content = json.dumps(expected_item).encode("utf8")
-
-    mock.side_effect = [response_vault, response_item]
+    vaults_by_title_mock = respx_mock.get(expected_path_vault_title).mock(
+        return_value=Response(200, json=get_vaults()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_ID, VAULT_TITLE)
     compare_items(expected_item, item)
-    mock.assert_any_call("GET", expected_path_vault_title)
-    mock.assert_called_with("GET", expected_path_item)
+    assert vaults_by_title_mock.called
+    assert item_mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_item_title_vault_id(mock):
+def test_get_item_by_item_title_vault_id(respx_mock):
     expected_item = get_item()
-    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
-    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-
-    response_item_summary = Response()
-    response_item_summary.status_code = 200
-    response_item_summary._content = json.dumps(get_items()).encode("utf8")
-
-    response_item = Response()
-    response_item.status_code = 200
-    response_item._content = json.dumps(get_item()).encode("utf8")
-
-    mock.side_effect = [response_item_summary, response_item]
+    items_by_title_mock = respx_mock.get(expected_path_item_title).mock(
+        return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_ID)
     compare_items(expected_item, item)
-    mock.assert_any_call("GET", expected_path_item_title)
-    mock.assert_called_with("GET", expected_path_item)
+    assert items_by_title_mock.called
+    assert item_mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_item_by_item_title_vault_title(mock):
+def test_get_item_by_item_title_vault_title(respx_mock):
     expected_item = get_item()
-    expected_path_vault_title = f"{HOST}/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
-    expected_path_item_title = f"{HOST}/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
-    expected_path_item = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path_vault_title = f"/v1/vaults?filter=name eq \"{VAULT_TITLE}\""
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-
-    response_vault = Response()
-    response_vault.status_code = 200
-    response_vault._content = json.dumps(get_vaults()).encode("utf8")
-
-    response_item_summary = Response()
-    response_item_summary.status_code = 200
-    response_item_summary._content = json.dumps(get_items()).encode("utf8")
-
-    response_item = Response()
-    response_item.status_code = 200
-    response_item._content = json.dumps(get_item()).encode("utf8")
-
-    mock.side_effect = [response_vault, response_item_summary, response_item]
+    vaults_by_title_mock = respx_mock.get(expected_path_vault_title).mock(
+        return_value=Response(200, json=get_vaults()))
+    items_by_title_mock = respx_mock.get(expected_path_item_title).mock(
+        return_value=Response(200, json=get_items()))
+    item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
     item = SS_CLIENT.get_item(ITEM_TITLE, VAULT_TITLE)
     compare_items(expected_item, item)
-    mock.assert_any_call("GET", expected_path_vault_title)
-    mock.assert_any_call("GET", expected_path_item_title)
-    mock.assert_called_with("GET", expected_path_item)
+    assert vaults_by_title_mock.called
+    assert items_by_title_mock.called
+    assert item_mock.called
 
 
-@patch.object(Session, 'request')
-def test_get_items(mock):
+def test_get_items(respx_mock):
     expected_items = get_items()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items"
+    expected_path = f"/v1/vaults/{VAULT_ID}/items"
 
-    mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_items).encode("utf8")
-    mock.return_value = response
+    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_items))
 
     items = SS_CLIENT.get_items(VAULT_ID)
     assert len(expected_items) == len(items)
     compare_summary_items(expected_items[0], items[0])
-    mock.assert_called_with("GET", expected_path)
+    assert mock.called
 
 
-@patch.object(Session, 'request')
-def test_delete_item(mock):
+def test_delete_item(respx_mock):
     expected_items = get_items()
-    expected_path = f"{HOST}/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+    expected_path = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    mock.return_value.ok = True
-    response = Response()
-    response.status_code = 200
-    response._content = json.dumps(expected_items).encode("utf8")
-    mock.return_value = response
+    mock = respx_mock.delete(expected_path).mock(return_value=Response(200, json=expected_items))
 
     SS_CLIENT.delete_item(ITEM_ID, VAULT_ID)
-    mock.assert_called_with("DELETE", expected_path)
+    assert mock.called
 
 
-@patch.object(Session, 'request')
-def test_create_item(mock):
-    mock.return_value.ok = True
-    mock.side_effect = create_item_side_effect
-
+def test_create_item(respx_mock):
     item = generate_full_item()
+    mock = respx_mock.post(f"/v1/vaults/{item.vault.id}/items").mock(return_value=Response(201, json=item.to_dict()))
 
-    created_item = SS_CLIENT.create_item(VAULT_ID, item)
+    created_item = SS_CLIENT.create_item(item.vault.id, item)
     assert mock.called
     compare_full_items(item, created_item)
 
 
-@patch.object(Session, 'request')
-def test_update_item(mock):
-    mock.return_value.ok = True
-    mock.side_effect = create_item_side_effect
-
+def test_update_item(respx_mock):
     item = generate_full_item()
+    mock = respx_mock.put(f"/v1/vaults/{item.vault.id}/items/{item.id}").mock(return_value=Response(200, json=item.to_dict()))
 
-    updated_item = SS_CLIENT.update_item(ITEM_ID, VAULT_ID, item)
+    updated_item = SS_CLIENT.update_item(item.id, item.vault.id, item)
     assert mock.called
     compare_full_items(item, updated_item)
 
@@ -218,13 +151,6 @@ def compare_full_items(expected_item, returned_item):
     assert len(expected_item.fields) == len(returned_item.fields)
     for i in range(len(expected_item.fields)):
         compare_full_item_fields(expected_item.fields[i], returned_item.fields[i])
-
-
-def create_item_side_effect(method, url, data):
-    response = Response()
-    response.status_code = 200
-    response._content = data
-    return response
 
 
 def compare_full_item_fields(expected_field, returned_field):
