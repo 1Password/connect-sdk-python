@@ -729,6 +729,7 @@ def new_client(url: str, token: str, is_async: bool = False):
     Parameters:
     url: The url of the 1Password Connect API
     token: The 1Password Service Account token
+    is_async: Initialize async or regular client
 
     Returns:
     Client: The 1Password Connect client

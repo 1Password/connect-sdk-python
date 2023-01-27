@@ -40,13 +40,16 @@ import onepasswordconnectsdk
     - `http://localhost:8080` if the Connect server is running in Docker on the same host.
     - `http(s)://<ip>:8080` or `http(s)://<hostname>:8080` if the Connect server is running on another host.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
+- **OP_CONNECT_CLIENT_ASYNC** - Whether to use async client or not. Possible values are:
+     - True - to use async client
+     - False - to use NOT async client (this is used by default)
 
 **Create a Client**
 
 There are two methods available for creating a client:
 
-- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN` and `OP_CONNECT_HOST` *environment variables*.
-- `new_client`: Builds a new client for interacting with 1Password Connect. Accepts the hostname of 1Password Connect and the API token generated for the application.
+- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN`, `OP_CONNECT_HOST` and `OP_CONNECT_CLIENT_ASYNC` *environment variables*.
+- `new_client`: Builds a new client for interacting with 1Password Connect. Accepts the hostname of 1Password Connect, the API token generated for the application, is_async flag to initialize async client.
 
 ```python
 from onepasswordconnectsdk.client import (
@@ -55,13 +58,14 @@ from onepasswordconnectsdk.client import (
     new_client
 )
 
-# creating client using OP_CONNECT_TOKEN and OP_CONNECT_HOST environment variables
+# creating client using OP_CONNECT_TOKEN, OP_CONNECT_HOST and OP_CONNECT_CLIENT_ASYNC environment variables
 client_from_env: Client = new_client_from_environment()
 
-# creates a client by supplying hostname and 1Password Connect API token
+# creates a client by supplying hostname, 1Password Connect API token, is_async flag
 client_from_token: Client = new_client(
     "{1Password_Connect_Host}",
-    "{1Password_Connect_API_Token}")
+    "{1Password_Connect_API_Token}",
+    True)
 ```
 
 **Get Item**
@@ -171,6 +175,26 @@ Returns the contents of a given file.
 
 ```python
 client.download_file("{file_id}", "{item_id}", "{vault_id}", "{content_path}")
+```
+
+**Async way**
+
+All the examples above can work in async way. Here is an example:
+```python
+import asyncio
+
+# initialize async client by passing is_async = True
+client: Client = new_client(
+    "{1Password_Connect_Host}",
+    "{1Password_Connect_API_Token}",
+    True)
+
+async def main():
+    vaults = await client.get_vaults()
+    item = await client.get_item("{item_id}", "{vault_id}")
+    # do something with vaults and item
+
+asyncio.run(main())
 ```
 
 **Load Configuration**
