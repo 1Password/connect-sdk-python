@@ -193,6 +193,7 @@ async def main():
     vaults = await client.get_vaults()
     item = await client.get_item("{item_id}", "{vault_id}")
     # do something with vaults and item
+    await async_client.session.aclose()  # close the client gracefully when you are done
 
 asyncio.run(main())
 ```
