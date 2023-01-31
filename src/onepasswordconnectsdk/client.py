@@ -76,8 +76,8 @@ class Client:
             )
         return self.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+        url = content_path if content_path is not None else f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
 
         response = self.build_request("GET", url)
         try:
@@ -91,8 +91,8 @@ class Client:
 
     def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
         file_object = self.get_file(file_id, item_id, vault_id)
-        filename = file_object.name
-        content = self.get_file_content(file_id, item_id, vault_id)
+        filename = file_object.name or "1password_item_file.txt"
+        content = self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
         global_path = os.path.join(path, filename)
 
         file = open(global_path, "wb")
