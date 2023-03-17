@@ -122,14 +122,14 @@ Update the item identified by the specified item and vault ids. The existing ite
 ```python
 from onepasswordconnectsdk.models import (ItemVault, Field)
 
-# Example item creation. Create an item with your desired arguments. 
+# Example item update. Update an item by providing new value and label. 
 item = onepasswordconnectsdk.models.Item(vault=ItemVault(id="av223f76ydutdngislnkbz6z5u"),
                                       id="kp2td65r4wbuhocwhhijpdbfqq",
                                       title="newtitle",
                                       category="LOGIN",
                                       tags=["1password-connect"],
                                       fields=[Field(value="new_user",
-                                                                  purpose="USERNAME")],
+                                                                  label="USERNAME")],
                                       )
 client.update_item("{item_id}", "{vault_id}", item)
 ```
