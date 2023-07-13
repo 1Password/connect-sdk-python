@@ -4,7 +4,7 @@
 <div align="center">
   <h1>1Password Connect SDK for Python</h1>
   <p>Access your 1Password items in your Python applications through your self-hosted <a href="https://developer.1password.com/docs/connect">1Password Connect server</a>.</p>
-  <a href="✨-get-started">
+  <a href="#-get-started">
     <img alt="Get started" src="https://user-images.githubusercontent.com/45081667/226940040-16d3684b-60f4-4d95-adb2-5757a8f1bc15.png" height="37"/>
   </a>
 </div>
