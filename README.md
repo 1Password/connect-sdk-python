@@ -4,7 +4,7 @@
 <div align="center">
   <h1>1Password Connect SDK for Python</h1>
   <p>Access your 1Password items in your Python applications through your self-hosted <a href="https://developer.1password.com/docs/connect">1Password Connect server</a>.</p>
-  <a href="link/to/dev-portal">
+  <a href="✨-get-started">
     <img alt="Get started" src="https://user-images.githubusercontent.com/45081667/226940040-16d3684b-60f4-4d95-adb2-5757a8f1bc15.png" height="37"/>
   </a>
 </div>
@@ -13,7 +13,11 @@
 
 The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://developer.1password.com/docs/connect) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
-## ✨ Quickstart
+## 🪄 See it in action
+
+Check the [Python Connect SDK Example](example/README.md) to see an example of item manipulation using the SDK that you can execute on your machine.
+
+## ✨ Get started
 
 1. Install the 1Password Connect Python SDK:
 
@@ -61,10 +65,10 @@ The 1Password Connect SDK provides access to 1Password via [1Password Connect](h
          tags=["1password-connect"],
          fields=[Field(value="new_user", purpose="USERNAME")],
      )
-     new_item = op_client.create_item(op_vault, item)
+     new_item = connect_client.create_item(op_vault, item)
      ```
 
-For more examples, check out [USAGE.md](USAGE.md).
+For more examples of how to use the SDK, check out [USAGE.md](USAGE.md).
 
 ## 💙 Community & Support
 
