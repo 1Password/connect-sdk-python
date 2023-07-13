@@ -25,20 +25,24 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
    pip install onepasswordconnectsdk
    ```
 
-2. Use the SDK:
+2. Export the `OP_CONNECT_HOST` and `OP_CONNECT_TOKEN` environment variables:
+
+   ```sh
+   export OP_CONNECT_HOST=<your-connect-host> && \
+       export OP_CONNECT_TOKEN=<your-connect-token>
+   ```
+
+3. Use the SDK:
 
    - Read a secret:
 
      ```python
      from onepasswordconnectsdk.client import (
          Client,
-         new_client,
+         new_client_from_env,
      }
 
-     connect_client: Client = new_client(
-         "{1Password_Connect_Host}",
-         "{1Password_Connect_API_Token}"
-     )
+     connect_client: Client = new_client_from_env()
 
      client.get_item("{item_id}", "{vault_id}")
      ```
@@ -48,13 +52,16 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
      ```python
      from onepasswordconnectsdk.client import (
          Client,
-         new_client,
+         new_client_from_env,
      }
 
-     connect_client: Client = new_client(
-         "{1Password_Connect_Host}",
-         "{1Password_Connect_API_Token}"
+     from onepasswordconnectsdk.models import (
+         Item,
+         ItemVault,
+         Field
      )
+
+     connect_client: Client = new_client_from_env()
 
      # Example item creation. Create an item with your desired arguments.
      item = Item(
@@ -65,6 +72,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
          tags=["1password-connect"],
          fields=[Field(value="new_user", purpose="USERNAME")],
      )
+
      new_item = connect_client.create_item(op_vault, item)
      ```
 
