@@ -4,7 +4,7 @@
 
 There are two methods available for creating a client:
 
-- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN` and `OP_CONNECT_HOST` _environment variables_.
+- `new_client_from_environment`: Builds a new client for interacting with 1Password Connect using the `OP_CONNECT_TOKEN` and `OP_CONNECT_HOST` environment variables.
 - `new_client`: Builds a new client for interacting with 1Password Connect. Accepts the hostname of 1Password Connect and the API token generated for the application.
 
 ```python
@@ -94,9 +94,9 @@ connect_client.download_file(files[1].id, item_id, vault_id, "local/path/to/file
 
 ## Load Configuration
 
-Users can create `classes` or `dicts` that describe fields they wish to get the values from in 1Password. Two convienience methods are provided that will handle the fetching of values for these fields:
+Users can create `classes` or `dicts` that describe fields they wish to get the values from in 1Password. Two convenience methods are provided that will handle the fetching of values for these fields:
 
-- **load_dict**: Takes a dictionary with keys specifying the user desired naming scheme of the values to return. Each key's value is a dictionary that includes information on where to find the item field value in 1Password. This returns a dictionary of user specified keys with values retrieved from 1Password
+- **load_dict**: Takes a dictionary with keys specifying the user desired naming scheme of the values to return. Each key's value is a dictionary that includes information on where to find the item field value in 1Password. This returns a dictionary of user specified keys with values retrieved from 1Password.
 - **load**: Takes an object with class attributes annotated with tags describing where to find desired fields in 1Password. Manipulates given object and fills attributes in with 1Password item field values.
 
 ```python
