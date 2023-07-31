@@ -40,7 +40,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
      from onepasswordconnectsdk.client import (
          Client,
          new_client_from_env,
-     }
+     )
 
      connect_client: Client = new_client_from_env()
 
