@@ -189,7 +189,7 @@ class Client:
 
         Args:
             vault_id (str): The id of the vault in which to get the items from
-            filter_query (str): A optional query statement, eg `title eq foo.bar`
+            filter_query (str): A optional query statement. `title eq foo.bar`
 
         Raises:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
@@ -198,10 +198,10 @@ class Client:
         Returns:
             List[SummaryItem]: A list of summarized items
         """
-        if filter_query:
-            url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
-        else:
+        if filter_query is None:
             url = f"/v1/vaults/{vault_id}/items"
+        else:
+            url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
 
         response = self.build_request("GET", url)
         try:
