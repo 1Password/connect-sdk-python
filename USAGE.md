@@ -21,6 +21,12 @@ connect_client_from_env: Client = new_client_from_environment()
 connect_client_from_token: Client = new_client(
     "{1Password_Connect_Host}",
     "{1Password_Connect_API_Token}")
+
+# creates async client
+connect_async_client: Client = new_client(
+    "{1Password_Connect_Host}",
+    "{1Password_Connect_API_Token}",
+    True)
 ```
 
 ## Environment Variables
@@ -32,6 +38,10 @@ connect_client_from_token: Client = new_client(
   - `http://localhost:8080` if the Connect server is running in Docker on the same host.
   - `http(s)://<ip>:8080` or `http(s)://<hostname>:8080` if the Connect server is running on another host.
 - **OP_VAULT** - The default vault to fetch items from if not specified.
+- **OP_CONNECT_CLIENT_ASYNC** - Whether to use async client or not. Possible values are:
+     - True - to use async client
+     - False - to use synchronous client (this is used by default)
+
 
 ## Working with Vaults
 
@@ -135,4 +145,25 @@ class Config:
 CONFIG = Config()
 
 values_object = onepasswordconnectsdk.load(connect_client, CONFIG)
+```
+
+## Async client
+
+All the examples above can work using an async client.
+```python
+import asyncio
+
+# initialize async client by passing `is_async = True`
+async_client: Client = new_client(
+    "{1Password_Connect_Host}",
+    "{1Password_Connect_API_Token}",
+    True)
+
+async def main():
+    vaults = await async_client.get_vaults()
+    item = await async_client.get_item("{item_id}", "{vault_id}")
+    # do something with vaults and item
+    await async_client.session.aclose()  # close the client gracefully when you are done
+
+asyncio.run(main())
 ```
