@@ -68,7 +68,7 @@ def test_get_vault_by_title(respx_mock):
 
 
 @pytest.mark.asyncio
-async def test_get_vault_by_title(respx_mock):
+async def test_get_vault_by_title_async(respx_mock):
     expected_vaults = list_vaults()
     expected_path = f"/v1/vaults?filter=name eq \"{VAULT_NAME}\""
 

@@ -96,7 +96,7 @@ item = {
             }
         },
         {
-            "id": "716C5B0E95A84092B2FE2CC402E0DDDF",
+            "id": "username",
             "label": "username",
             "value": USERNAME_VALUE
         }
