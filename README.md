@@ -42,7 +42,7 @@ import onepasswordconnectsdk
 - **OP_VAULT** - The default vault to fetch items from if not specified.
 - **OP_CONNECT_CLIENT_ASYNC** - Whether to use async client or not. Possible values are:
      - True - to use async client
-     - False - to use NOT async client (this is used by default)
+     - False - to use synchronous client (this is used by default)
 
 **Create a Client**
 
@@ -61,7 +61,7 @@ from onepasswordconnectsdk.client import (
 # creating client using OP_CONNECT_TOKEN, OP_CONNECT_HOST and OP_CONNECT_CLIENT_ASYNC environment variables
 client_from_env: Client = new_client_from_environment()
 
-# creates a client by supplying hostname, 1Password Connect API token, is_async flag
+# creates a client by supplying hostname, 1Password Connect API token and `is_async` flag
 client_from_token: Client = new_client(
     "{1Password_Connect_Host}",
     "{1Password_Connect_API_Token}",
@@ -177,27 +177,6 @@ Returns the contents of a given file.
 client.download_file("{file_id}", "{item_id}", "{vault_id}", "{content_path}")
 ```
 
-**Async way**
-
-All the examples above can work in async way. Here is an example:
-```python
-import asyncio
-
-# initialize async client by passing is_async = True
-client: Client = new_client(
-    "{1Password_Connect_Host}",
-    "{1Password_Connect_API_Token}",
-    True)
-
-async def main():
-    vaults = await client.get_vaults()
-    item = await client.get_item("{item_id}", "{vault_id}")
-    # do something with vaults and item
-    await async_client.session.aclose()  # close the client gracefully when you are done
-
-asyncio.run(main())
-```
-
 **Load Configuration**
 
 Users can create `classes` or `dicts` that describe fields they wish to get the values from in 1Password. Two convienience methods are provided that will handle the fetching of values for these fields:
@@ -241,6 +220,27 @@ class Config:
 CONFIG = Config()
 
 values_object = onepasswordconnectsdk.load(client, CONFIG)
+```
+
+## Async client
+
+All the examples above can work using an async client.
+```python
+import asyncio
+
+# initialize async client by passing is_async = True
+async_client: Client = new_client(
+    "{1Password_Connect_Host}",
+    "{1Password_Connect_API_Token}",
+    True)
+
+async def main():
+    vaults = await async_client.get_vaults()
+    item = await async_client.get_item("{item_id}", "{vault_id}")
+    # do something with vaults and item
+    await async_client.session.aclose()  # close the client gracefully when you are done
+
+asyncio.run(main())
 ```
 
 ## Development
