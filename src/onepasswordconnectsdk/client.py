@@ -376,6 +376,9 @@ class AsyncClient:
         self.session = session
         self.serializer = serializer
 
+    def __del__(self):
+        self.session.aclose()
+
     async def get_file(self, file_id: str, item_id: str, vault_id: str):
         url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
         response = await self.build_request("GET", url)
