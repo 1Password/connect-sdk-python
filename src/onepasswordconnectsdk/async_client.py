@@ -4,6 +4,7 @@ from httpx import HTTPError
 import json
 import os
 
+from onepasswordconnectsdk.connect import PathBuilder
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid
 from onepasswordconnectsdk.errors import (
@@ -33,7 +34,7 @@ class AsyncClient:
         self.session.aclose()
 
     async def get_file(self, file_id: str, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
+        url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -45,8 +46,7 @@ class AsyncClient:
         return self.serializer.deserialize(response.content, "File")
 
     async def get_files(self, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files"
-
+        url = PathBuilder().vaults(vault_id).items(item_id).files().build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -57,9 +57,10 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    async def get_file_content(self, file_id: str, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
-
+    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+        url = content_path
+        if content_path is None:
+            url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -73,7 +74,7 @@ class AsyncClient:
     async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
         file_object = await self.get_file(file_id, item_id, vault_id)
         filename = file_object.name
-        content = await self.get_file_content(file_id, item_id, vault_id)
+        content = await self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
         global_path = os.path.join(path, filename)
 
         file = open(global_path, "wb")
@@ -120,7 +121,6 @@ class AsyncClient:
             Item object: The found item
         """
         url = f"/v1/vaults/{vault_id}/items/{item_id}"
-
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -146,8 +146,7 @@ class AsyncClient:
             Item object: The found item
         """
         filter_query = f'title eq "{title}"'
-        url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
-
+        url = PathBuilder().vaults(vault_id).items().query("filter", filter_query).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -179,8 +178,7 @@ class AsyncClient:
         Returns:
             List[SummaryItem]: A list of summarized items
         """
-        url = f"/v1/vaults/{vault_id}/items"
-
+        url = PathBuilder().vaults(vault_id).items().build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -204,8 +202,7 @@ class AsyncClient:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
             from the 1Password Connect API
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_id}"
-
+        url = PathBuilder().vaults(vault_id).items(item_id).build()
         response = await self.build_request("DELETE", url)
         try:
             response.raise_for_status()
@@ -230,8 +227,7 @@ class AsyncClient:
             Item: The created item
         """
 
-        url = f"/v1/vaults/{vault_id}/items"
-
+        url = PathBuilder().vaults(vault_id).items().build()
         response = await self.build_request("POST", url, item)
         try:
             response.raise_for_status()
@@ -257,7 +253,7 @@ class AsyncClient:
         Returns:
             Item: The updated item
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_uuid}"
+        url = PathBuilder().vaults(vault_id).items(item_uuid).build()
         item.id = item_uuid
         item.vault = ItemVault(id=vault_id)
 
@@ -284,7 +280,7 @@ class AsyncClient:
         Returns:
             Vault: The specified vault
         """
-        url = f"/v1/vaults/{vault_id}"
+        url = PathBuilder().vaults(vault_id).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -310,8 +306,7 @@ class AsyncClient:
             Vault: The specified vault
         """
         filter_query = f'name eq "{name}"'
-        url = f"/v1/vaults?filter={filter_query}"
-
+        url = PathBuilder().vaults().query("filter", filter_query).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -339,9 +334,8 @@ class AsyncClient:
         Returns:
             List[Vault]: All vaults for the service account in use
         """
-        url = "/v1/vaults"
+        url = PathBuilder().vaults().build()
         response = await self.build_request("GET", url)
-
         try:
             response.raise_for_status()
         except HTTPError:

@@ -5,6 +5,7 @@ import json
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
+from onepasswordconnectsdk.connect import PathBuilder
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid
 from onepasswordconnectsdk.errors import (
@@ -40,7 +41,7 @@ class Client:
         self.session.close()
 
     def get_file(self, file_id: str, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
+        url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -52,8 +53,7 @@ class Client:
         return self.serializer.deserialize(response.content, "File")
 
     def get_files(self, item_id: str, vault_id: str):
-        url = f"/v1/vaults/{vault_id}/items/{item_id}/files"
-
+        url = PathBuilder().vaults(vault_id).items(item_id).files().build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -65,8 +65,9 @@ class Client:
         return self.serializer.deserialize(response.content, "list[File]")
 
     def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
-        url = content_path if content_path is not None else f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
-
+        url = content_path
+        if content_path is None:
+            url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -125,8 +126,7 @@ class Client:
         Returns:
             Item object: The found item
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_id}"
-
+        url = PathBuilder().vaults(vault_id).items(item_id).build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -152,8 +152,7 @@ class Client:
             Item object: The found item
         """
         filter_query = f'title eq "{title}"'
-        url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
-
+        url = PathBuilder().vaults(vault_id).items().query("filter", filter_query).build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -185,8 +184,7 @@ class Client:
         Returns:
             List[SummaryItem]: A list of summarized items
         """
-        url = f"/v1/vaults/{vault_id}/items"
-
+        url = PathBuilder().vaults(vault_id).items().build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -204,14 +202,12 @@ class Client:
         Args:
             item_id (str): The id of the item in which to delete the item from
             vault_id (str): The id of the vault in which to delete the item
-            from
 
         Raises:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
             from the 1Password Connect API
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_id}"
-
+        url = PathBuilder().vaults(vault_id).items(item_id).build()
         response = self.build_request("DELETE", url)
         try:
             response.raise_for_status()
@@ -236,8 +232,7 @@ class Client:
             Item: The created item
         """
 
-        url = f"/v1/vaults/{vault_id}/items"
-
+        url = PathBuilder().vaults(vault_id).items().build()
         response = self.build_request("POST", url, item)
         try:
             response.raise_for_status()
@@ -263,7 +258,7 @@ class Client:
         Returns:
             Item: The updated item
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_uuid}"
+        url = PathBuilder().vaults(vault_id).items(item_uuid).build()
         item.id = item_uuid
         item.vault = ItemVault(id=vault_id)
 
@@ -290,7 +285,7 @@ class Client:
         Returns:
             Vault: The specified vault
         """
-        url = f"/v1/vaults/{vault_id}"
+        url = PathBuilder().vaults(vault_id).build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -316,8 +311,7 @@ class Client:
             Vault: The specified vault
         """
         filter_query = f'name eq "{name}"'
-        url = f"/v1/vaults?filter={filter_query}"
-
+        url = PathBuilder().vaults().query("filter", filter_query).build()
         response = self.build_request("GET", url)
         try:
             response.raise_for_status()
@@ -345,9 +339,8 @@ class Client:
         Returns:
             List[Vault]: All vaults for the service account in use
         """
-        url = "/v1/vaults"
+        url = PathBuilder().vaults().build()
         response = self.build_request("GET", url)
-
         try:
             response.raise_for_status()
         except HTTPError:
