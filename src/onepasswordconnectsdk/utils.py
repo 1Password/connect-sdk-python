@@ -9,3 +9,12 @@ def is_valid_uuid(uuid):
         if valid is False:
             return False
     return True
+
+
+def build_headers(token: str):
+    """Builds the headers needed to make a request to the server
+
+    Returns:
+        dict: The 1Password Connect API request headers
+    """
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}

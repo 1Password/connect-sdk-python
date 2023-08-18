@@ -1,47 +1,40 @@
-"""Python Client for connecting to 1Password Connect"""
+"""Python AsyncClient for connecting to 1Password Connect"""
 import httpx
 from httpx import HTTPError
 import json
 import os
 
-from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
-    EnvironmentHostNotSetException,
-    EnvironmentTokenNotSetException,
 )
 from onepasswordconnectsdk.models import Item, ItemVault
-from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
-
-ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
-ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 
 
-class Client:
-    """Python Client Class"""
+class AsyncClient:
+    """Python Async Client Class"""
 
     def __init__(self, url: str, token: str):
-        """Initialize client"""
+        """Initialize async client"""
         self.url = url
         self.token = token
         self.session = self.create_session(url, token)
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str):
-        return httpx.Client(base_url=url, headers=self.build_headers(token))
+        return httpx.AsyncClient(base_url=url, headers=self.build_headers(token))
 
     def build_headers(self, token: str):
         return build_headers(token)
 
     def __del__(self):
-        self.session.close()
+        self.session.aclose()
 
-    def get_file(self, file_id: str, item_id: str, vault_id: str):
+    async def get_file(self, file_id: str, item_id: str, vault_id: str):
         url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}"
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -51,10 +44,10 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "File")
 
-    def get_files(self, item_id: str, vault_id: str):
+    async def get_files(self, item_id: str, vault_id: str):
         url = f"/v1/vaults/{vault_id}/items/{item_id}/files"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -64,10 +57,10 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
-        url = content_path if content_path is not None else f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
+    async def get_file_content(self, file_id: str, item_id: str, vault_id: str):
+        url = f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -77,17 +70,17 @@ class Client:
             )
         return response.content
 
-    def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
-        file_object = self.get_file(file_id, item_id, vault_id)
-        filename = file_object.name or "1password_item_file.txt"
-        content = self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
+    async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
+        file_object = await self.get_file(file_id, item_id, vault_id)
+        filename = file_object.name
+        content = await self.get_file_content(file_id, item_id, vault_id)
         global_path = os.path.join(path, filename)
 
         file = open(global_path, "wb")
         file.write(content)
         file.close()
 
-    def get_item(self, item: str, vault: str):
+    async def get_item(self, item: str, vault: str):
         """Get a specific item
 
         Args:
@@ -104,16 +97,17 @@ class Client:
 
         vault_id = vault
         if not is_valid_uuid(vault):
-            vault_id = self.get_vault_by_title(vault).id
+            vault = await self.get_vault_by_title(vault)
+            vault_id = vault.id
 
         if is_valid_uuid(item):
-            return self.get_item_by_id(item, vault_id)
+            return await self.get_item_by_id(item, vault_id)
         else:
-            return self.get_item_by_title(item, vault_id)
+            return await self.get_item_by_title(item, vault_id)
 
-    def get_item_by_id(self, item_id: str, vault_id: str):
+    async def get_item_by_id(self, item_id: str, vault_id: str):
         """Get a specific item by uuid
-       
+
         Args:
             item_id (str): The id of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -127,7 +121,7 @@ class Client:
         """
         url = f"/v1/vaults/{vault_id}/items/{item_id}"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -137,9 +131,9 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def get_item_by_title(self, title: str, vault_id: str):
+    async def get_item_by_title(self, title: str, vault_id: str):
         """Get a specific item by title
-        
+
         Args:
             title (str): The title of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -154,7 +148,7 @@ class Client:
         filter_query = f'title eq "{title}"'
         url = f"/v1/vaults/{vault_id}/items?filter={filter_query}"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -170,9 +164,9 @@ class Client:
             )
 
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
-        return self.get_item_by_id(item_summary.id, vault_id)
+        return await self.get_item_by_id(item_summary.id, vault_id)
 
-    def get_items(self, vault_id: str):
+    async def get_items(self, vault_id: str):
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -187,7 +181,7 @@ class Client:
         """
         url = f"/v1/vaults/{vault_id}/items"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -198,7 +192,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[SummaryItem]")
 
-    def delete_item(self, item_id: str, vault_id: str):
+    async def delete_item(self, item_id: str, vault_id: str):
         """Deletes a specified item from a specified vault
 
         Args:
@@ -212,7 +206,7 @@ class Client:
         """
         url = f"/v1/vaults/{vault_id}/items/{item_id}"
 
-        response = self.build_request("DELETE", url)
+        response = await self.build_request("DELETE", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -221,7 +215,7 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
 
-    def create_item(self, vault_id: str, item: Item):
+    async def create_item(self, vault_id: str, item: Item):
         """Creates an item at the specified vault
 
         Args:
@@ -238,7 +232,7 @@ class Client:
 
         url = f"/v1/vaults/{vault_id}/items"
 
-        response = self.build_request("POST", url, item)
+        response = await self.build_request("POST", url, item)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -248,7 +242,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def update_item(self, item_uuid: str, vault_id: str, item: Item):
+    async def update_item(self, item_uuid: str, vault_id: str, item: Item):
         """Update the specified item at the specified vault.
 
         Args:
@@ -267,7 +261,7 @@ class Client:
         item.id = item_uuid
         item.vault = ItemVault(id=vault_id)
 
-        response = self.build_request("PUT", url, item)
+        response = await self.build_request("PUT", url, item)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -277,7 +271,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def get_vault(self, vault_id: str):
+    async def get_vault(self, vault_id: str):
         """Returns the vault with the given vault_id
 
         Args:
@@ -291,7 +285,7 @@ class Client:
             Vault: The specified vault
         """
         url = f"/v1/vaults/{vault_id}"
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -302,12 +296,12 @@ class Client:
 
         return self.serializer.deserialize(response.content, "Vault")
 
-    def get_vault_by_title(self, name: str):
+    async def get_vault_by_title(self, name: str):
         """Returns the vault with the given name
-        
+
         Args:
             name (str): The name of the vault in which to fetch
-        
+
         Raises:
             FailedToRetrieveVaultException: Thrown when a HTTP error is
             returned from the 1Password Connect API
@@ -318,7 +312,7 @@ class Client:
         filter_query = f'name eq "{name}"'
         url = f"/v1/vaults?filter={filter_query}"
 
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
         except HTTPError:
@@ -335,7 +329,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[Vault]")[0]
 
-    def get_vaults(self):
+    async def get_vaults(self):
         """Returns all vaults for service account set in client
 
         Raises:
@@ -346,7 +340,7 @@ class Client:
             List[Vault]: All vaults for the service account in use
         """
         url = "/v1/vaults"
-        response = self.build_request("GET", url)
+        response = await self.build_request("GET", url)
 
         try:
             response.raise_for_status()
@@ -381,48 +375,3 @@ class Client:
 
     def sanitize_for_serialization(self, obj):
         return self.serializer.sanitize_for_serialization(obj)
-
-
-def new_client(url: str, token: str, is_async: bool = False):
-    """Builds a new client for interacting with 1Password Connect
-    Parameters:
-    url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
-    is_async: Initialize async or sync client
-
-    Returns:
-    Client: The 1Password Connect client
-    """
-    if is_async:
-        return AsyncClient(url, token)
-    return Client(url, token)
-
-
-def new_client_from_environment(url: str = None):
-    """Builds a new client for interacting with 1Password Connect
-    using the OP_TOKEN environment variable
-
-    Parameters:
-    url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
-
-    Returns:
-    Client: The 1Password Connect client
-    """
-    token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
-    is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
-
-    if url is None:
-        url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
-        if url is None:
-            raise EnvironmentHostNotSetException(
-                f"{CONNECT_HOST_ENV_VARIABLE} environment variable is not set"
-            )
-
-    if token is None:
-        raise EnvironmentTokenNotSetException(
-            "There is no token available in the "
-            f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
-        )
-
-    return new_client(url, token, is_async)
