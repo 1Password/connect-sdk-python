@@ -176,7 +176,7 @@ class Client:
 
         Args:
             vault_id (str): The id of the vault in which to get the items from
-            filter_query (str): A optional query statement. `title eq foo.bar`
+            filter_query (str): A optional query statement. `title eq "Example Item"`
 
         Raises:
             FailedToRetrieveItemException: Thrown when a HTTP error is returned
