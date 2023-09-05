@@ -36,6 +36,7 @@ class Field(object):
         'label': 'str',
         'value': 'str',
         'generate': 'bool',
+        'recipe': 'GeneratorRecipe',
         'entropy': 'float',
         'totp': 'str'
     }
@@ -48,11 +49,12 @@ class Field(object):
         'label': 'label',
         'value': 'value',
         'generate': 'generate',
+        'recipe': 'recipe',
         'entropy': 'entropy',
         'totp': 'totp'
     }
 
-    def __init__(self, id=None, section=None, type='STRING', purpose=None, label=None, value=None, generate=False, entropy=None, totp=None):  # noqa: E501
+    def __init__(self, id=None, section=None, type='STRING', purpose=None, label=None, value=None, generate=False, recipe=None, entropy=None, totp=None):  # noqa: E501
         self._id = None
         self._section = None
         self._type = None
@@ -60,6 +62,7 @@ class Field(object):
         self._label = None
         self._value = None
         self._generate = None
+        self._recipe = None
         self._entropy = None
         self._totp = None
         self.discriminator = None
@@ -77,6 +80,8 @@ class Field(object):
             self.value = value
         if generate is not None:
             self.generate = generate
+        if recipe is not None:
+            self.recipe = recipe
         if entropy is not None:
             self.entropy = entropy
         if totp is not None:
@@ -237,6 +242,27 @@ class Field(object):
         """
 
         self._generate = generate
+
+    @property
+    def recipe(self):
+        """Gets the recipe of this Field.  # noqa: E501
+
+
+        :return: The recipe of this Field.  # noqa: E501
+        :rtype: GeneratorRecipe
+        """
+        return self._recipe
+
+    @recipe.setter
+    def recipe(self, recipe):
+        """Sets the recipe of this Field.
+
+
+        :param recipe: The recipe of this Field.  # noqa: E501
+        :type: GeneratorRecipe
+        """
+
+        self._recipe = recipe
 
     @property
     def entropy(self):
