@@ -3,7 +3,7 @@ import steps
 import time
 
 import onepasswordconnectsdk
-from onepasswordconnectsdk.models import (ItemVault, Field)
+from onepasswordconnectsdk.models import (ItemVault, Field, GeneratorRecipe)
 
 op_connect_token = os.environ["OP_CONNECT_TOKEN"]
 default_vault = os.environ["OP_VAULT"]
@@ -21,7 +21,17 @@ username_item = onepasswordconnectsdk.models.Item(
     title="Secret String",
     category="LOGIN",
     tags=["1password-connect"],
-    fields=[Field(value=secret_string)])
+    fields=[
+        Field(
+            value=secret_string
+        ),
+        Field(
+            purpose="PASSWORD",
+            generate=True,
+            recipe=GeneratorRecipe(length=10, character_sets=['LETTERS'])
+        )
+    ]
+)
 print(steps.steps["step2"])
 
 # ADD THE ITEM TO THE 1P VAULT
