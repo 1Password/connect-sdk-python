@@ -29,7 +29,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
 
    ```sh
    export OP_CONNECT_HOST=<your-connect-host> && \
-       export OP_CONNECT_TOKEN=<your-connect-token>
+   export OP_CONNECT_TOKEN=<your-connect-token>
    ```
 
 3. Use the SDK:
