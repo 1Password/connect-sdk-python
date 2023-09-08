@@ -12,6 +12,24 @@
 
 ---
 
+[//]: # "START/v1.4.0"
+
+# v1.4.0
+
+## Features
+
+- Support async operations `(async/await)`. {#62}
+- Enable filter usage on `get_items`. Credits to @ITJamie for the contribution! {#76}
+
+## Fixes
+
+- Drop support for python 2. {#61}
+- 'download_file' function uses content path now {#65}
+- Enhance README and move usage content to USAGE.md. {#74}
+- Fix README typos. Credits to @ITJamie for the contribution! {#75}
+
+---
+
 [//]: # "START/v1.3.0"
 
 # v1.3.0
