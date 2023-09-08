@@ -29,8 +29,8 @@ class AsyncClient:
     def build_headers(self, token: str):
         return build_headers(token)
 
-    def __del__(self):
-        self.session.aclose()
+    async def __aexit__(self):
+        await self.session.aclose()
 
     async def get_file(self, file_id: str, item_id: str, vault_id: str):
         url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).build()
