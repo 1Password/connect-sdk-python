@@ -38,3 +38,8 @@ def test_all_files_path():
 def test_single_file_path():
     path = PathBuilder().vaults(VAULT_ID).items(ITEM_ID).files(FILE_ID).build()
     assert path == f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}/files/{FILE_ID}"
+
+
+def test_file_conten_path():
+    path = PathBuilder().vaults(VAULT_ID).items(ITEM_ID).files(FILE_ID).content().build()
+    assert path == f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}/files/{FILE_ID}/content"
