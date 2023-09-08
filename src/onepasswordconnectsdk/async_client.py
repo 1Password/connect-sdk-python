@@ -119,7 +119,7 @@ class AsyncClient:
         Returns:
             Item object: The found item
         """
-        url = f"/v1/vaults/{vault_id}/items/{item_id}"
+        url = PathBuilder().vaults(vault_id).items(item_id).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
