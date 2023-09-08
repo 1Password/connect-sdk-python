@@ -164,7 +164,7 @@ class AsyncClient:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return await self.get_item_by_id(item_summary.id, vault_id)
 
-    async def get_items(self, vault_id: str):
+    async def get_items(self, vault_id: str, filter_query: str = None):
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -177,7 +177,10 @@ class AsyncClient:
         Returns:
             List[SummaryItem]: A list of summarized items
         """
-        url = PathBuilder().vaults(vault_id).items().build()
+        if filter_query is None:
+            url = PathBuilder().vaults(vault_id).items().build()
+        else:
+            url = PathBuilder().vaults(vault_id).items().query("filter", filter_query).build()
         response = await self.build_request("GET", url)
         try:
             response.raise_for_status()
