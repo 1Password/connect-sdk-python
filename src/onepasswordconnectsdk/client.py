@@ -5,9 +5,8 @@ import json
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
-from onepasswordconnectsdk.connect import PathBuilder
 from onepasswordconnectsdk.serializer import Serializer
-from onepasswordconnectsdk.utils import build_headers, is_valid_uuid
+from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,

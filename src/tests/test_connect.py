@@ -1,4 +1,4 @@
-from onepasswordconnectsdk.connect import PathBuilder
+from onepasswordconnectsdk.utils import PathBuilder
 
 VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
 ITEM_ID = "wepiqdxdzncjtnvmv5fegud4qy"
