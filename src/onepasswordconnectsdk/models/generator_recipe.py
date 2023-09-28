@@ -35,25 +35,30 @@ class GeneratorRecipe(object):
     """
     openapi_types = {
         'length': 'int',
-        'character_sets': 'list[str]'
+        'character_sets': 'list[str]',
+        'exclude_characters': 'str'
     }
 
     attribute_map = {
         'length': 'length',
-        'character_sets': 'characterSets'
+        'character_sets': 'characterSets',
+        'exclude_characters': 'excludeCharacters'
     }
 
-    def __init__(self, length=32, character_sets=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, length=32, character_sets=None, exclude_characters=None, local_vars_configuration=None):  # noqa: E501
         """GeneratorRecipe - a model defined in OpenAPI"""  # noqa: E501
 
         self._length = None
         self._character_sets = None
+        self._exclude_characters = None
         self.discriminator = None
 
         if length is not None:
             self.length = length
         if character_sets is not None:
             self.character_sets = character_sets
+        if exclude_characters is not None:
+            self.exclude_characters = exclude_characters
 
     @property
     def length(self):
@@ -110,6 +115,33 @@ class GeneratorRecipe(object):
 
         self._character_sets = character_sets
 
+    @property
+    def exclude_characters(self):
+        """Gets the exclude_characters of this GeneratorRecipe.
+
+
+        :return: The exclude_characters of this GeneratorRecipe.
+        :rtype: str
+        """
+        return self._exclude_characters
+    
+    @exclude_characters.setter
+    def exclude_characters(self, exclude_characters):
+        """Sets the exclude_characters of this GeneratorRecipe.
+
+
+        :param exclude_characters: The exclude_characters of this GeneratorRecipe.
+        :type character_sets: str
+        """
+        duplicates = self.find_duplicates(exclude_characters)
+        if duplicates:
+            raise ValueError(
+                "Invalid values for `exclude_characters` {0}, must not contain duplicate characters"
+                .format(", ".join(map(str, duplicates)))
+            )
+
+        self._exclude_characters = exclude_characters
+
     def to_dict(self, serialize=False):
         """Returns the model properties as a dict"""
         result = {}
@@ -163,3 +195,16 @@ class GeneratorRecipe(object):
             return True
 
         return self.to_dict() != other.to_dict()
+
+    def find_duplicates(self, s):
+        char_count = {}  # Dictionary to store count of each character
+        duplicates = set()  # Set to store duplicate characters
+
+        for char in s:
+            char_count[char] = char_count.get(char, 0) + 1  # Increment count of char
+
+        for char, count in char_count.items():
+            if count > 1:
+                duplicates.add(char)  # If count is more than 1, it's a duplicate
+
+        return duplicates
