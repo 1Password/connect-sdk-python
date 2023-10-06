@@ -3,6 +3,7 @@ import httpx
 from httpx import HTTPError
 import json
 import os
+from typing import Optional
 
 from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
@@ -63,7 +64,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: Optional[str] = None):
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
@@ -170,7 +171,7 @@ class Client:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return self.get_item_by_id(item_summary.id, vault_id)
 
-    def get_items(self, vault_id: str, filter_query: str = None):
+    def get_items(self, vault_id: str, filter_query: Optional[str] = None):
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -395,7 +396,7 @@ def new_client(url: str, token: str, is_async: bool = False):
     return Client(url, token)
 
 
-def new_client_from_environment(url: str = None):
+def new_client_from_environment(url: Optional[str] = None):
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 

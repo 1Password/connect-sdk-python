@@ -1,6 +1,6 @@
 import os
 import shlex
-from typing import List, Dict
+from typing import List, Dict, Optional
 from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
     SummaryItem,
@@ -166,7 +166,7 @@ def _set_values_for_item(
     client: Client,
     parsed_item: ParsedItem,
     config_dict={},
-    config_object: object = None,
+    config_object: Optional[object] = None,
 ):
     # Fetching the full item
     item: Item = client.get_item(parsed_item.item_title, parsed_item.vault_uuid)
