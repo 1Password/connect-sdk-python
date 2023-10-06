@@ -3,6 +3,7 @@ import httpx
 from httpx import HTTPError
 import json
 import os
+from typing import Optional
 
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
@@ -56,7 +57,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: Optional[str] = None):
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
@@ -164,7 +165,7 @@ class AsyncClient:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return await self.get_item_by_id(item_summary.id, vault_id)
 
-    async def get_items(self, vault_id: str, filter_query: str = None):
+    async def get_items(self, vault_id: str, filter_query: Optional[str] = None):
         """Returns a list of item summaries for the specified vault
 
         Args:

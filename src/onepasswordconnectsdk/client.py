@@ -3,6 +3,8 @@ import httpx
 from httpx import HTTPError
 import json
 import os
+from typing import Optional, Union, overload
+from typing_extensions import Literal
 
 from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
@@ -63,7 +65,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: Optional[str] = None):
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
@@ -170,7 +172,7 @@ class Client:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return self.get_item_by_id(item_summary.id, vault_id)
 
-    def get_items(self, vault_id: str, filter_query: str = None):
+    def get_items(self, vault_id: str, filter_query: Optional[str] = None):
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -380,7 +382,29 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False):
+@overload
+def new_client(
+    url: str, token: str, is_async: Literal[False] = ...
+) -> Client:
+    ...
+
+
+@overload
+def new_client(
+    url: str, token: str, is_async: Literal[True] = ...
+) -> AsyncClient:
+    ...
+
+@overload
+def new_client(
+    url: str, token: str, is_async: bool = ...
+) -> Union[Client, AsyncClient]:
+    ...
+
+
+def new_client(
+    url: str, token: str, is_async: bool = False
+) -> Union[Client, AsyncClient]:
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
@@ -395,19 +419,45 @@ def new_client(url: str, token: str, is_async: bool = False):
     return Client(url, token)
 
 
-def new_client_from_environment(url: str = None):
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: Literal[False] = ...
+) -> Client:
+    ...
+
+
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: Literal[True] = ...
+) -> AsyncClient:
+    ...
+
+
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: None = ...
+) -> Union[Client, AsyncClient]:
+    ...
+
+
+def new_client_from_environment(
+    url: Optional[str] = None, is_async: Optional[bool] = None
+) -> Union[Client, AsyncClient]:
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
     Parameters:
     url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
+    is_async: If set to True, return an async client; if False, return a sync client.
+       If not set or set to None, return an async client if the OP_CONNECT_CLIENT_ASYNC
+       environment variable is set to "True", a sync client otherwise.
 
     Returns:
-    Client: The 1Password Connect client
+    Client or AsyncClient: The 1Password Connect client
     """
     token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
-    is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
+    if is_async is None:
+        is_async = os.environ.get(ENV_IS_ASYNC_CLIENT).lower() in ("t", "true", "1")
 
     if url is None:
         url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)

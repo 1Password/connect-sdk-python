@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 UUIDLength = 26
 
 
@@ -27,19 +30,19 @@ class PathBuilder:
     def build(self) -> str:
         return self.path
 
-    def vaults(self, uuid: str = None) -> 'PathBuilder':
+    def vaults(self, uuid: Optional[str] = None) -> 'PathBuilder':
         self._append_path("vaults")
         if uuid is not None:
             self._append_path(uuid)
         return self
 
-    def items(self, uuid: str = None) -> 'PathBuilder':
+    def items(self, uuid: Optional[str] = None) -> 'PathBuilder':
         self._append_path("items")
         if uuid is not None:
             self._append_path(uuid)
         return self
 
-    def files(self, uuid: str = None) -> 'PathBuilder':
+    def files(self, uuid: Optional[str] = None) -> 'PathBuilder':
         self._append_path("files")
         if uuid is not None:
             self._append_path(uuid)
@@ -54,7 +57,7 @@ class PathBuilder:
         self._append_path(query=key_value_pair)
         return self
 
-    def _append_path(self, path_chunk: str = None, query: str = None) -> 'PathBuilder':
+    def _append_path(self, path_chunk: Optional[str] = None, query: Optional[str] = None) -> 'PathBuilder':
         if path_chunk is not None:
             self.path += f"/{path_chunk}"
         if query is not None:
