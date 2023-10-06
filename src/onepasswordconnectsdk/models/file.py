@@ -2,7 +2,7 @@ import pprint
 import re  # noqa: F401
 
 
-class File(object):
+class File:
     openapi_types = {
         'id': 'str',
         'name': 'str',
