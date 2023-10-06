@@ -3,7 +3,8 @@ import httpx
 from httpx import HTTPError
 import json
 import os
-from typing import Optional
+from typing import Optional, Union, overload
+from typing_extensions import Literal
 
 from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
@@ -381,7 +382,29 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False):
+@overload
+def new_client(
+    url: str, token: str, is_async: Literal[False] = ...
+) -> Client:
+    ...
+
+
+@overload
+def new_client(
+    url: str, token: str, is_async: Literal[True] = ...
+) -> AsyncClient:
+    ...
+
+@overload
+def new_client(
+    url: str, token: str, is_async: bool = ...
+) -> Union[Client, AsyncClient]:
+    ...
+
+
+def new_client(
+    url: str, token: str, is_async: bool = False
+) -> Union[Client, AsyncClient]:
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
@@ -396,7 +419,30 @@ def new_client(url: str, token: str, is_async: bool = False):
     return Client(url, token)
 
 
-def new_client_from_environment(url: Optional[str] = None, is_async: Optional[bool] = None):
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: Literal[False] = ...
+) -> Client:
+    ...
+
+
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: Literal[True] = ...
+) -> AsyncClient:
+    ...
+
+
+@overload
+def new_client_from_environment(
+    url: Optional[str] = ..., is_async: None = ...
+) -> Union[Client, AsyncClient]:
+    ...
+
+
+def new_client_from_environment(
+    url: Optional[str] = None, is_async: Optional[bool] = None
+) -> Union[Client, AsyncClient]:
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
