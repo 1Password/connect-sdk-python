@@ -3,7 +3,7 @@ import steps
 import time
 
 import onepasswordconnectsdk
-from onepasswordconnectsdk.models import Field, GeneratorRecipe
+from onepasswordconnectsdk.models import Field, GeneratorRecipe, Item
 
 op_connect_token = os.environ["OP_CONNECT_TOKEN"]
 default_vault = os.environ["OP_VAULT"]
@@ -17,7 +17,7 @@ client = onepasswordconnectsdk.client.new_client_from_environment(connect_host)
 print(steps.steps["step1"])
 
 # CREATE A NEW ITEM
-username_item = onepasswordconnectsdk.models.Item(
+username_item = Item(
     title="Secret String",
     category="LOGIN",
     tags=["1password-connect"],
