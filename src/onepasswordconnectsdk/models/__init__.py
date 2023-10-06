@@ -1,5 +1,3 @@
-# flake8: noqa
-
 # import models into model package
 from onepasswordconnectsdk.models.error import Error
 from onepasswordconnectsdk.models.item import Item
@@ -15,3 +13,20 @@ from onepasswordconnectsdk.models.item_vault import ItemVault
 from onepasswordconnectsdk.models.parsed_field import ParsedField
 from onepasswordconnectsdk.models.parsed_item import ParsedItem
 from onepasswordconnectsdk.models.vault import Vault
+
+__all__ = [
+    "Error",
+    "Field",
+    "FieldSection",
+    "File",
+    "GeneratorRecipe",
+    "Item",
+    "ItemDetails",
+    "ItemUrls",
+    "ItemVault",
+    "ParsedField",
+    "ParsedItem",
+    "Section",
+    "SummaryItem",
+    "Vault",
+]
