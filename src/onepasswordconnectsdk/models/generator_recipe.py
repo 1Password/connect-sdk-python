@@ -117,7 +117,7 @@ class GeneratorRecipe:
             else:
                 return x
 
-        for attr, _ in self.openapi_types.items():
+        for attr in self.openapi_types:
             value = getattr(self, attr)
             attr = self.attribute_map.get(attr, attr) if serialize else attr
             if isinstance(value, list):
