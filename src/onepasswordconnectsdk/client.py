@@ -396,19 +396,22 @@ def new_client(url: str, token: str, is_async: bool = False):
     return Client(url, token)
 
 
-def new_client_from_environment(url: Optional[str] = None):
+def new_client_from_environment(url: Optional[str] = None, is_async: Optional[bool] = None):
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
     Parameters:
     url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
+    is_async: If set to True, return an async client; if False, return a sync client.
+       If not set or set to None, return an async client if the OP_CONNECT_CLIENT_ASYNC
+       environment variable is set to "True", a sync client otherwise.
 
     Returns:
-    Client: The 1Password Connect client
+    Client or AsyncClient: The 1Password Connect client
     """
     token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
-    is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
+    if is_async is None:
+        is_async = os.environ.get(ENV_IS_ASYNC_CLIENT).lower() in ("t", "true", "1")
 
     if url is None:
         url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
