@@ -9,7 +9,6 @@
 
 
 import pprint
-import re  # noqa: F401
 
 
 from onepasswordconnectsdk.models import Item

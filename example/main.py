@@ -3,7 +3,7 @@ import steps
 import time
 
 import onepasswordconnectsdk
-from onepasswordconnectsdk.models import (ItemVault, Field, GeneratorRecipe)
+from onepasswordconnectsdk.models import Field, GeneratorRecipe
 
 op_connect_token = os.environ["OP_CONNECT_TOKEN"]
 default_vault = os.environ["OP_VAULT"]
