@@ -117,7 +117,7 @@ class Client:
 
     def get_item_by_id(self, item_id: str, vault_id: str) -> Item:
         """Get a specific item by uuid
-       
+
         Args:
             item_id (str): The id of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -142,7 +142,7 @@ class Client:
 
     def get_item_by_title(self, title: str, vault_id: str) -> Item:
         """Get a specific item by title
-        
+
         Args:
             title (str): The title of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -307,10 +307,10 @@ class Client:
 
     def get_vault_by_title(self, name: str) -> Vault:
         """Returns the vault with the given name
-        
+
         Args:
             name (str): The name of the vault in which to fetch
-        
+
         Raises:
             FailedToRetrieveVaultException: Thrown when a HTTP error is
             returned from the 1Password Connect API
