@@ -37,7 +37,7 @@ class Client:
     def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.session.close()
 
     def get_file(self, file_id: str, item_id: str, vault_id: str) -> File:
