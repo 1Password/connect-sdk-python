@@ -2,6 +2,7 @@
 import httpx
 from httpx import HTTPError
 import json
+from typing import Dict, List
 import os
 
 from onepasswordconnectsdk.serializer import Serializer
@@ -26,7 +27,7 @@ class AsyncClient:
     def create_session(self, url: str, token: str) -> httpx.AsyncClient:
         return httpx.AsyncClient(base_url=url, headers=self.build_headers(token))
 
-    def build_headers(self, token: str) -> dict[str, str]:
+    def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
 
     async def __aexit__(self):
@@ -44,7 +45,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "File")
 
-    async def get_files(self, item_id: str, vault_id: str) -> list[File]:
+    async def get_files(self, item_id: str, vault_id: str) -> List[File]:
         url = PathBuilder().vaults(vault_id).items(item_id).files().build()
         response = await self.build_request("GET", url)
         try:
@@ -164,7 +165,7 @@ class AsyncClient:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return await self.get_item_by_id(item_summary.id, vault_id)
 
-    async def get_items(self, vault_id: str, filter_query: str = None) -> list[SummaryItem]:
+    async def get_items(self, vault_id: str, filter_query: str = None) -> List[SummaryItem]:
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -326,7 +327,7 @@ class AsyncClient:
 
         return self.serializer.deserialize(response.content, "list[Vault]")[0]
 
-    async def get_vaults(self) -> list[Vault]:
+    async def get_vaults(self) -> List[Vault]:
         """Returns all vaults for service account set in client
 
         Raises:

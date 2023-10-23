@@ -3,6 +3,7 @@ from typing import Dict, List, Union
 import httpx
 from httpx import HTTPError
 import json
+from typing import Dict, List
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
@@ -171,7 +172,7 @@ class Client:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return self.get_item_by_id(item_summary.id, vault_id)
 
-    def get_items(self, vault_id: str, filter_query: str = None) -> list[SummaryItem]:
+    def get_items(self, vault_id: str, filter_query: str = None) -> List[SummaryItem]:
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -334,7 +335,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[Vault]")[0]
 
-    def get_vaults(self) -> list[Vault]:
+    def get_vaults(self) -> List[Vault]:
         """Returns all vaults for service account set in client
 
         Raises:
