@@ -392,7 +392,7 @@ def new_client(url: str, token: str) -> Client:
 
 def new_client_from_environment(url: str = None) -> Client:
     """Builds a new client for interacting with 1Password Connect
-    using the OP_TOKEN environment variable
+    using the OP_CONNECT_TOKEN environment variable
 
     Parameters:
     url: The url of the 1Password Connect API
