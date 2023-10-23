@@ -70,8 +70,8 @@ class AsyncClient:
             )
         return response.content
 
-    async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
-        file_object = await self.get_file(file_id, item_id, vault_id) 
+    async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str) -> None:
+        file_object = await self.get_file(file_id, item_id, vault_id)
         filename = file_object.name or "1password_item_file.txt"
         content = await self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
         global_path = os.path.join(path, filename)
