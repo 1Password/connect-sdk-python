@@ -4,9 +4,14 @@ from httpx import HTTPError
 import json
 import os
 
+from onepasswordconnectsdk.client import ENV_SERVICE_ACCOUNT_JWT_VARIABLE
+from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
+
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
 from onepasswordconnectsdk.errors import (
+    EnvironmentHostNotSetException,
+    EnvironmentTokenNotSetException,
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
 )
@@ -371,3 +376,43 @@ class AsyncClient:
 
     def sanitize_for_serialization(self, obj):
         return self.serializer.sanitize_for_serialization(obj)
+
+
+def new_async_client(url: str, token: str) -> AsyncClient:
+    """Builds a new client for interacting with 1Password Connect
+    Parameters:
+    url: The url of the 1Password Connect API
+    token: The 1Password Service Account token
+
+    Returns:
+    AsyncClient: The 1Password Connect client
+    """
+    return AsyncClient(url, token)
+
+
+def new_async_client_from_environment(url: str = None) -> AsyncClient:
+    """Builds a new client for interacting with 1Password Connect
+    using the OP_TOKEN environment variable
+
+    Parameters:
+    url: The url of the 1Password Connect API
+
+    Returns:
+    Client: The 1Password Connect client
+    """
+    token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
+
+    if url is None:
+        url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
+        if url is None:
+            raise EnvironmentHostNotSetException(
+                f"{CONNECT_HOST_ENV_VARIABLE} environment variable is not set"
+            )
+
+    if token is None:
+        raise EnvironmentTokenNotSetException(
+            "There is no token available in the "
+            f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
+        )
+
+    return new_async_client(url, token)
