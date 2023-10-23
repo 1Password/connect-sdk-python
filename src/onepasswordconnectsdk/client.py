@@ -4,7 +4,6 @@ from httpx import HTTPError
 import json
 import os
 
-from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
 from onepasswordconnectsdk.errors import (
@@ -380,22 +379,19 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False):
+def new_client(url: str, token: str) -> Client:
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
     token: The 1Password Service Account token
-    is_async: Initialize async or sync client
 
     Returns:
     Client: The 1Password Connect client
     """
-    if is_async:
-        return AsyncClient(url, token)
     return Client(url, token)
 
 
-def new_client_from_environment(url: str = None):
+def new_client_from_environment(url: str = None) -> Client:
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
@@ -407,7 +403,6 @@ def new_client_from_environment(url: str = None):
     Client: The 1Password Connect client
     """
     token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
-    is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
 
     if url is None:
         url = os.environ.get(CONNECT_HOST_ENV_VARIABLE)
@@ -422,4 +417,4 @@ def new_client_from_environment(url: str = None):
             f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
         )
 
-    return new_client(url, token, is_async)
+    return new_client(url, token)
