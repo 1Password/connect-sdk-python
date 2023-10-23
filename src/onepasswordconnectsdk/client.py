@@ -397,7 +397,6 @@ def new_client_from_environment(url: str = None) -> Client:
 
     Parameters:
     url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
 
     Returns:
     Client: The 1Password Connect client
