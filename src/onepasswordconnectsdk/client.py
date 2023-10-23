@@ -16,7 +16,6 @@ from onepasswordconnectsdk.models import Item, ItemVault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
-ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 
 
 class Client:
