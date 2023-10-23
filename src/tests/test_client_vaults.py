@@ -1,13 +1,13 @@
 import pytest
 from httpx import Response
-from onepasswordconnectsdk import client
+from onepasswordconnectsdk import async_client, client
 
 VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
 VAULT_NAME = "VaultA"
 HOST = "https://mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
-SS_CLIENT_ASYNC = client.new_client(HOST, TOKEN, True)
+SS_CLIENT_ASYNC = async_client.new_async_client(HOST, TOKEN)
 
 
 def test_get_vaults(respx_mock):
