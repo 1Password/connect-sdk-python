@@ -64,9 +64,6 @@ class Client:
             )
         return self.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> str:
-        url = content_path if content_path is not None else f"/v1/vaults/{vault_id}/items/{item_id}/files/{file_id}/content"
-
     def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> Union[bytes, str]:
         url = content_path
         if content_path is None:
