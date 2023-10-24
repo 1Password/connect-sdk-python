@@ -2,6 +2,7 @@
 import httpx
 from httpx import HTTPError
 import json
+from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.serializer import Serializer
@@ -10,29 +11,29 @@ from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
 )
-from onepasswordconnectsdk.models import Item, ItemVault
+from onepasswordconnectsdk.models import File, Item, ItemVault, SummaryItem, Vault
 
 
 class AsyncClient:
     """Python Async Client Class"""
 
-    def __init__(self, url: str, token: str):
+    def __init__(self, url: str, token: str) -> None:
         """Initialize async client"""
         self.url = url
         self.token = token
         self.session = self.create_session(url, token)
         self.serializer = Serializer()
 
-    def create_session(self, url: str, token: str):
+    def create_session(self, url: str, token: str) -> httpx.AsyncClient:
         return httpx.AsyncClient(base_url=url, headers=self.build_headers(token))
 
-    def build_headers(self, token: str):
+    def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
 
     async def __aexit__(self):
         await self.session.aclose()
 
-    async def get_file(self, file_id: str, item_id: str, vault_id: str):
+    async def get_file(self, file_id: str, item_id: str, vault_id: str) -> File:
         url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).build()
         response = await self.build_request("GET", url)
         try:
@@ -44,7 +45,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "File")
 
-    async def get_files(self, item_id: str, vault_id: str):
+    async def get_files(self, item_id: str, vault_id: str) -> List[File]:
         url = PathBuilder().vaults(vault_id).items(item_id).files().build()
         response = await self.build_request("GET", url)
         try:
@@ -56,7 +57,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> Union[bytes, str]:
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
@@ -70,7 +71,7 @@ class AsyncClient:
             )
         return response.content
 
-    async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
+    async def download_file(self, file_id: str, item_id: str, vault_id: str, path: str) -> None:
         file_object = await self.get_file(file_id, item_id, vault_id)
         filename = file_object.name or "1password_item_file.txt"
         content = await self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
@@ -80,7 +81,7 @@ class AsyncClient:
         file.write(content)
         file.close()
 
-    async def get_item(self, item: str, vault: str):
+    async def get_item(self, item: str, vault: str) -> Item:
         """Get a specific item
 
         Args:
@@ -105,7 +106,7 @@ class AsyncClient:
         else:
             return await self.get_item_by_title(item, vault_id)
 
-    async def get_item_by_id(self, item_id: str, vault_id: str):
+    async def get_item_by_id(self, item_id: str, vault_id: str) -> Item:
         """Get a specific item by uuid
 
         Args:
@@ -130,7 +131,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    async def get_item_by_title(self, title: str, vault_id: str):
+    async def get_item_by_title(self, title: str, vault_id: str) -> Item:
         """Get a specific item by title
 
         Args:
@@ -164,7 +165,7 @@ class AsyncClient:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return await self.get_item_by_id(item_summary.id, vault_id)
 
-    async def get_items(self, vault_id: str, filter_query: str = None):
+    async def get_items(self, vault_id: str, filter_query: str = None) -> List[SummaryItem]:
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -192,7 +193,7 @@ class AsyncClient:
 
         return self.serializer.deserialize(response.content, "list[SummaryItem]")
 
-    async def delete_item(self, item_id: str, vault_id: str):
+    async def delete_item(self, item_id: str, vault_id: str) -> None:
         """Deletes a specified item from a specified vault
 
         Args:
@@ -214,7 +215,7 @@ class AsyncClient:
                      for {url} with message: {response.json().get('message')}"
             )
 
-    async def create_item(self, vault_id: str, item: Item):
+    async def create_item(self, vault_id: str, item: Item) -> Item:
         """Creates an item at the specified vault
 
         Args:
@@ -240,7 +241,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    async def update_item(self, item_uuid: str, vault_id: str, item: Item):
+    async def update_item(self, item_uuid: str, vault_id: str, item: Item) -> Item:
         """Update the specified item at the specified vault.
 
         Args:
@@ -269,7 +270,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    async def get_vault(self, vault_id: str):
+    async def get_vault(self, vault_id: str) -> Vault:
         """Returns the vault with the given vault_id
 
         Args:
@@ -294,7 +295,7 @@ class AsyncClient:
 
         return self.serializer.deserialize(response.content, "Vault")
 
-    async def get_vault_by_title(self, name: str):
+    async def get_vault_by_title(self, name: str) -> Vault:
         """Returns the vault with the given name
 
         Args:
@@ -326,7 +327,7 @@ class AsyncClient:
 
         return self.serializer.deserialize(response.content, "list[Vault]")[0]
 
-    async def get_vaults(self):
+    async def get_vaults(self) -> List[Vault]:
         """Returns all vaults for service account set in client
 
         Raises:
@@ -348,7 +349,7 @@ class AsyncClient:
 
         return self.serializer.deserialize(response.content, "list[Vault]")
 
-    def build_request(self, method: str, path: str, body=None):
+    def build_request(self, method: str, path: str, body=None) -> httpx.Response:
         """Builds a http request
         Parameters:
         method (str): The rest method to be used

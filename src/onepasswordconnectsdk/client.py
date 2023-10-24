@@ -2,6 +2,7 @@
 import httpx
 from httpx import HTTPError
 import json
+from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
@@ -13,7 +14,7 @@ from onepasswordconnectsdk.errors import (
     EnvironmentHostNotSetException,
     EnvironmentTokenNotSetException,
 )
-from onepasswordconnectsdk.models import Item, ItemVault
+from onepasswordconnectsdk.models import File, Item, ItemVault, SummaryItem, Vault
 from onepasswordconnectsdk.models.constants import CONNECT_HOST_ENV_VARIABLE
 
 ENV_SERVICE_ACCOUNT_JWT_VARIABLE = "OP_CONNECT_TOKEN"
@@ -23,23 +24,23 @@ ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 class Client:
     """Python Client Class"""
 
-    def __init__(self, url: str, token: str):
+    def __init__(self, url: str, token: str) -> None:
         """Initialize client"""
         self.url = url
         self.token = token
         self.session = self.create_session(url, token)
         self.serializer = Serializer()
 
-    def create_session(self, url: str, token: str):
+    def create_session(self, url: str, token: str) -> httpx.Client:
         return httpx.Client(base_url=url, headers=self.build_headers(token))
 
-    def build_headers(self, token: str):
+    def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.session.close()
 
-    def get_file(self, file_id: str, item_id: str, vault_id: str):
+    def get_file(self, file_id: str, item_id: str, vault_id: str) -> File:
         url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).build()
         response = self.build_request("GET", url)
         try:
@@ -51,7 +52,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "File")
 
-    def get_files(self, item_id: str, vault_id: str):
+    def get_files(self, item_id: str, vault_id: str) -> List[File]:
         url = PathBuilder().vaults(vault_id).items(item_id).files().build()
         response = self.build_request("GET", url)
         try:
@@ -63,7 +64,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None):
+    def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> Union[bytes, str]:
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()
@@ -77,7 +78,7 @@ class Client:
             )
         return response.content
 
-    def download_file(self, file_id: str, item_id: str, vault_id: str, path: str):
+    def download_file(self, file_id: str, item_id: str, vault_id: str, path: str) -> None:
         file_object = self.get_file(file_id, item_id, vault_id)
         filename = file_object.name or "1password_item_file.txt"
         content = self.get_file_content(file_id, item_id, vault_id, file_object.content_path)
@@ -87,7 +88,7 @@ class Client:
         file.write(content)
         file.close()
 
-    def get_item(self, item: str, vault: str):
+    def get_item(self, item: str, vault: str) -> Item:
         """Get a specific item
 
         Args:
@@ -111,9 +112,9 @@ class Client:
         else:
             return self.get_item_by_title(item, vault_id)
 
-    def get_item_by_id(self, item_id: str, vault_id: str):
+    def get_item_by_id(self, item_id: str, vault_id: str) -> Item:
         """Get a specific item by uuid
-       
+
         Args:
             item_id (str): The id of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -136,9 +137,9 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def get_item_by_title(self, title: str, vault_id: str):
+    def get_item_by_title(self, title: str, vault_id: str) -> Item:
         """Get a specific item by title
-        
+
         Args:
             title (str): The title of the item to be fetched
             vault_id (str): The id of the vault in which to get the item from
@@ -170,7 +171,7 @@ class Client:
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
         return self.get_item_by_id(item_summary.id, vault_id)
 
-    def get_items(self, vault_id: str, filter_query: str = None):
+    def get_items(self, vault_id: str, filter_query: str = None) -> List[SummaryItem]:
         """Returns a list of item summaries for the specified vault
 
         Args:
@@ -200,7 +201,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[SummaryItem]")
 
-    def delete_item(self, item_id: str, vault_id: str):
+    def delete_item(self, item_id: str, vault_id: str) -> None:
         """Deletes a specified item from a specified vault
 
         Args:
@@ -221,7 +222,7 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
 
-    def create_item(self, vault_id: str, item: Item):
+    def create_item(self, vault_id: str, item: Item) -> Item:
         """Creates an item at the specified vault
 
         Args:
@@ -247,7 +248,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def update_item(self, item_uuid: str, vault_id: str, item: Item):
+    def update_item(self, item_uuid: str, vault_id: str, item: Item) -> Item:
         """Update the specified item at the specified vault.
 
         Args:
@@ -276,7 +277,7 @@ class Client:
             )
         return self.serializer.deserialize(response.content, "Item")
 
-    def get_vault(self, vault_id: str):
+    def get_vault(self, vault_id: str) -> Vault:
         """Returns the vault with the given vault_id
 
         Args:
@@ -301,12 +302,12 @@ class Client:
 
         return self.serializer.deserialize(response.content, "Vault")
 
-    def get_vault_by_title(self, name: str):
+    def get_vault_by_title(self, name: str) -> Vault:
         """Returns the vault with the given name
-        
+
         Args:
             name (str): The name of the vault in which to fetch
-        
+
         Raises:
             FailedToRetrieveVaultException: Thrown when a HTTP error is
             returned from the 1Password Connect API
@@ -333,7 +334,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[Vault]")[0]
 
-    def get_vaults(self):
+    def get_vaults(self) -> List[Vault]:
         """Returns all vaults for service account set in client
 
         Raises:
@@ -355,7 +356,7 @@ class Client:
 
         return self.serializer.deserialize(response.content, "list[Vault]")
 
-    def build_request(self, method: str, path: str, body=None):
+    def build_request(self, method: str, path: str, body=None) -> httpx.Response:
         """Builds a http request
         Parameters:
         method (str): The rest method to be used
@@ -380,7 +381,7 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False):
+def new_client(url: str, token: str, is_async: bool = False) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
@@ -395,7 +396,7 @@ def new_client(url: str, token: str, is_async: bool = False):
     return Client(url, token)
 
 
-def new_client_from_environment(url: str = None):
+def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
     using the OP_TOKEN environment variable
 
