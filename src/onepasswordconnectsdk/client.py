@@ -50,7 +50,7 @@ class Client:
                 f"Unable to retrieve item. Received {response.status_code}\
                                      for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "File")
+        return self.serializer.deserialize(response.content, "File")
 
     def get_files(self, item_id: str, vault_id: str) -> List[File]:
         url = PathBuilder().vaults(vault_id).items(item_id).files().build()
@@ -62,7 +62,7 @@ class Client:
                 f"Unable to retrieve item. Received {response.status_code}\
                              for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "list[File]")
+        return self.serializer.deserialize(response.content, "list[File]")
 
     def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> Union[bytes, str]:
         url = content_path
@@ -135,7 +135,7 @@ class Client:
                 f"Unable to retrieve item. Received {response.status_code}\
                      for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "Item")
+        return self.serializer.deserialize(response.content, "Item")
 
     def get_item_by_title(self, title: str, vault_id: str) -> Item:
         """Get a specific item by title
@@ -199,7 +199,7 @@ class Client:
                      for {url} with message: {response.json().get('message')}"
             )
 
-        return self.deserialize(response.content, "list[SummaryItem]")
+        return self.serializer.deserialize(response.content, "list[SummaryItem]")
 
     def delete_item(self, item_id: str, vault_id: str) -> None:
         """Deletes a specified item from a specified vault
@@ -246,7 +246,7 @@ class Client:
                 f"Unable to post item. Received {response.status_code}\
                     for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "Item")
+        return self.serializer.deserialize(response.content, "Item")
 
     def update_item(self, item_uuid: str, vault_id: str, item: Item) -> Item:
         """Update the specified item at the specified vault.
@@ -275,7 +275,7 @@ class Client:
                 f"Unable to post item. Received {response.status_code}\
                     for {url} with message: {response.json().get('message')}"
             )
-        return self.deserialize(response.content, "Item")
+        return self.serializer.deserialize(response.content, "Item")
 
     def get_vault(self, vault_id: str) -> Vault:
         """Returns the vault with the given vault_id
@@ -300,7 +300,7 @@ class Client:
                      for {url} with message {response.json().get('message')}"
             )
 
-        return self.deserialize(response.content, "Vault")
+        return self.serializer.deserialize(response.content, "Vault")
 
     def get_vault_by_title(self, name: str) -> Vault:
         """Returns the vault with the given name
@@ -354,7 +354,7 @@ class Client:
                      for {url} with message {response.json().get('message')}"
             )
 
-        return self.deserialize(response.content, "list[Vault]")
+        return self.serializer.deserialize(response.content, "list[Vault]")
 
     def build_request(self, method: str, path: str, body=None) -> httpx.Response:
         """Builds a http request
