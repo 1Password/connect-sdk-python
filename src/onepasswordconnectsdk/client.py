@@ -1,5 +1,4 @@
 """Python Client for connecting to 1Password Connect"""
-from typing import Dict, List, Union
 import httpx
 from httpx import HTTPError
 import json
