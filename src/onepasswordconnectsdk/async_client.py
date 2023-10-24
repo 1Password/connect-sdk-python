@@ -2,7 +2,7 @@
 import httpx
 from httpx import HTTPError
 import json
-from typing import Dict, List
+from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.serializer import Serializer
@@ -57,7 +57,7 @@ class AsyncClient:
             )
         return self.serializer.deserialize(response.content, "list[File]")
 
-    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> bytes | str:
+    async def get_file_content(self, file_id: str, item_id: str, vault_id: str, content_path: str = None) -> Union[bytes, str]:
         url = content_path
         if content_path is None:
             url = PathBuilder().vaults(vault_id).items(item_id).files(file_id).content().build()

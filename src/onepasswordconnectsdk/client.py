@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 import httpx
 from httpx import HTTPError
 import json
-from typing import Dict, List
+from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
