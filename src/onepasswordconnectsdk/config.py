@@ -3,7 +3,6 @@ import shlex
 from typing import List, Dict
 from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
-    SummaryItem,
     Item,
     ParsedField,
     ParsedItem,
