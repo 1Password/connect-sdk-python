@@ -39,10 +39,10 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
      ```python
      from onepasswordconnectsdk.client import (
          Client,
-         new_client_from_env,
+         new_client_from_environment,
      )
 
-     connect_client: Client = new_client_from_env()
+     connect_client: Client = new_client_from_environment()
 
      client.get_item("{item_id}", "{vault_id}")
      ```
@@ -52,7 +52,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
      ```python
      from onepasswordconnectsdk.client import (
          Client,
-         new_client_from_env,
+         new_client_from_environment,
      }
 
      from onepasswordconnectsdk.models import (
@@ -61,7 +61,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
          Field
      )
 
-     connect_client: Client = new_client_from_env()
+     connect_client: Client = new_client_from_environment()
 
      # Example item creation. Create an item with your desired arguments.
      item = Item(
