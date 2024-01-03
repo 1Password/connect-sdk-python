@@ -48,12 +48,12 @@ print(steps.steps["step4"])
 print(steps.steps["confirmation"])
 answer = input()
 
-while answer != ('y' or 'n'):
+while answer.lower() not in {'y', 'n'}:
     print(steps.steps["confirmation2"])
     answer = input()
 
 # DELETE THE ITEM FROM THE VAULT
-if answer == 'y':
+if answer.lower() == 'y':
     client.delete_item(posted_item.id, default_vault)
     print(steps.steps["step5"])
 
