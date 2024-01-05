@@ -368,8 +368,8 @@ class Client:
         """
 
         if body:
-            serialized_body = json.dumps(self.serializer.sanitize_for_serialization(body))
-            response = self.session.request(method, path, data=serialized_body)
+            sanitized_body = self.serializer.sanitize_for_serialization(body)
+            response = self.session.request(method, path, json=sanitized_body)
         else:
             response = self.session.request(method, path)
         return response
