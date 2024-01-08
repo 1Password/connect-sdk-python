@@ -12,6 +12,19 @@
 
 ---
 
+[//]: # (START/v1.4.1)
+# v1.4.1
+
+Credits to @mjpieters for the contribution! :rocket:
+
+## Fixes
+ * Undeclared dependency: six (in generated code). {#85}
+ * Leave JSON encoding to HTTPX. {#87}
+ * Correct function name in documentation. {#90}
+ * Update example main.py to handle 'n' input. {#91}
+
+---
+
 [//]: # "START/v1.4.0"
 
 # v1.4.0
