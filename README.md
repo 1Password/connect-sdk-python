@@ -31,6 +31,12 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
    export OP_CONNECT_HOST=<your-connect-host> && \
    export OP_CONNECT_TOKEN=<your-connect-token>
    ```
+   
+   2.1 If you need a higher timeout on the client requests you can export `OP_CLIENT_REQ_TIMEOUT` environment variable:
+   ```sh
+   # set the timeout to 90 seconds
+   export OP_CLIENT_REQ_TIMEOUT=90
+   ```
 
 3. Use the SDK:
 
