@@ -120,14 +120,17 @@ CONFIG = {
     "database": {
         "opitem": "My database item",
         "opfield": ".database",
+        "opvault": "some_vault_id",
     },
     "username": {
         "opitem": "My database item",
         "opfield": ".username",
+        "opvault": "some_vault_id",
     },
     "password": {
         "opitem": "My database item",
         "opfield": ".password",
+        "opvault": "some_vault_id",
     },
 }
 
