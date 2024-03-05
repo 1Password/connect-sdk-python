@@ -16,14 +16,16 @@ from onepasswordconnectsdk.models import File, Item, ItemVault, SummaryItem, Vau
 class AsyncClient:
     """Python Async Client Class"""
 
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, url: str, token: str, cert: str = None) -> None:
         """Initialize async client"""
         self.url = url
         self.token = token
-        self.session = self.create_session(url, token)
+        self.session = self.create_session(url, token, cert)
         self.serializer = Serializer()
 
-    def create_session(self, url: str, token: str) -> httpx.AsyncClient:
+    def create_session(self, url: str, token: str, cert: str = None) -> httpx.AsyncClient:
+        if cert:
+            return httpx.AsyncClient(base_url=url, headers=self.build_headers(token), verify=cert)
         return httpx.AsyncClient(base_url=url, headers=self.build_headers(token))
 
     def build_headers(self, token: str) -> Dict[str, str]:
