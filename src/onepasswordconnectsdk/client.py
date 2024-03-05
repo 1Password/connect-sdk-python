@@ -24,14 +24,16 @@ ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 class Client:
     """Python Client Class"""
 
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, url: str, token: str, cert: str = None) -> None:
         """Initialize client"""
         self.url = url
         self.token = token
-        self.session = self.create_session(url, token)
+        self.session = self.create_session(url, token, cert)
         self.serializer = Serializer()
 
-    def create_session(self, url: str, token: str) -> httpx.Client:
+    def create_session(self, url: str, token: str, cert: str = None) -> httpx.Client:
+        if cert:
+            return httpx.Client(base_url=url, headers=self.build_headers(token), verify=cert)
         return httpx.Client(base_url=url, headers=self.build_headers(token))
 
     def build_headers(self, token: str) -> Dict[str, str]:
@@ -381,19 +383,25 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False) -> Union[AsyncClient, Client]:
+def new_client(url: str, token: str, is_async: bool = False, certificate: str = None) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
     Parameters:
     url: The url of the 1Password Connect API
     token: The 1Password Service Account token
     is_async: Initialize async or sync client
+    certificate: Optional path to custom certificate bundle for verification
 
     Returns:
     Client: The 1Password Connect client
     """
-    if is_async:
+    if is_async and certificate:
+        return AsyncClient(url, token, certificate)
+    elif is_async:
         return AsyncClient(url, token)
-    return Client(url, token)
+    elif certificate:
+        return Client(url, token, certificate)
+    else:
+        return Client(url, token)
 
 
 def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
