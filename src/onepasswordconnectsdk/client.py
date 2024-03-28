@@ -5,9 +5,9 @@ import json
 from typing import Dict, List, Union
 import os
 
-from onepasswordconnectsdk.async_client import AsyncClient, get_timeout
+from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
-from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
+from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,

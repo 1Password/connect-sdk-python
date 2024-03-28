@@ -35,7 +35,7 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
    2.1 If you need a higher timeout on the client requests you can export `OP_CLIENT_REQ_TIMEOUT` environment variable:
    ```sh
    # set the timeout to 90 seconds
-   export OP_CLIENT_REQ_TIMEOUT=90
+   export OP_CLIENT_REQUEST_TIMEOUT=90
    ```
 
 3. Use the SDK:

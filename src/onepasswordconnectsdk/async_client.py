@@ -1,26 +1,16 @@
 """Python AsyncClient for connecting to 1Password Connect"""
 import httpx
-from httpx import HTTPError, USE_CLIENT_DEFAULT
+from httpx import HTTPError
 from typing import Dict, List, Union
 import os
 
-from httpx._client import UseClientDefault
-
 from onepasswordconnectsdk.serializer import Serializer
-from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
+from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
 )
 from onepasswordconnectsdk.models import File, Item, ItemVault, SummaryItem, Vault
-
-
-ENV_CLIENT_REQ_TIMEOUT = "OP_CONNECT_CLIENT_REQ_TIMEOUT"
-
-
-def get_timeout() -> Union[int, UseClientDefault]:
-    timeout = int(os.getenv(ENV_CLIENT_REQ_TIMEOUT, 0))
-    return timeout if timeout else USE_CLIENT_DEFAULT
 
 
 class AsyncClient:
