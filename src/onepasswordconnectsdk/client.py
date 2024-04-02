@@ -1,13 +1,13 @@
 """Python Client for connecting to 1Password Connect"""
 import httpx
-from httpx import HTTPError
+from httpx import HTTPError, USE_CLIENT_DEFAULT
 import json
 from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
 from onepasswordconnectsdk.serializer import Serializer
-from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
+from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
@@ -32,7 +32,7 @@ class Client:
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str) -> httpx.Client:
-        return httpx.Client(base_url=url, headers=self.build_headers(token))
+        return httpx.Client(base_url=url, headers=self.build_headers(token), timeout=get_timeout())
 
     def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)

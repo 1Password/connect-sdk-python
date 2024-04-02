@@ -1,6 +1,10 @@
+import os
 import pytest
+from unittest import mock
+
 from httpx import Response
 from onepasswordconnectsdk import client, models
+from onepasswordconnectsdk.utils import ENV_CLIENT_REQUEST_TIMEOUT
 
 VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
 VAULT_TITLE = "VaultA"
@@ -440,3 +444,16 @@ def generate_full_item():
                                                 id="Section_47DC4DDBF26640AB8B8618DA36D5A499"))],
                        sections=[models.Section(id="id", label="label")])
     return item
+
+
+def test_set_timeout_using_env_variable():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '120'}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == 120
+
+
+@pytest.mark.asyncio
+def test_set_timeout_using_env_variable_async():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '120'}):
+        client_instance = client.new_client(HOST, TOKEN, is_async=True)
+        assert client_instance.session.timeout.read == 120

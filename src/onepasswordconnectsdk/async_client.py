@@ -5,7 +5,7 @@ from typing import Dict, List, Union
 import os
 
 from onepasswordconnectsdk.serializer import Serializer
-from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder
+from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
     FailedToRetrieveVaultException,
@@ -24,7 +24,8 @@ class AsyncClient:
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str) -> httpx.AsyncClient:
-        return httpx.AsyncClient(base_url=url, headers=self.build_headers(token))
+        # import here to avoid circular import
+        return httpx.AsyncClient(base_url=url, headers=self.build_headers(token), timeout=get_timeout())
 
     def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
