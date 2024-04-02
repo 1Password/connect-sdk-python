@@ -12,6 +12,14 @@
 
 ---
 
+[//]: # (START/v1.5.0)
+# v1.5.0
+
+## Features
+  * Allow custom timeout using env vars. {#94}
+
+---
+
 [//]: # (START/v1.4.1)
 # v1.4.1
 
