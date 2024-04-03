@@ -463,3 +463,21 @@ def test_set_timeout_using_env_variable_async():
     with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '120'}):
         client_instance = client.new_client(HOST, TOKEN, is_async=True)
         assert client_instance.session.timeout.read == 120
+
+
+def test_disable_all_timeouts():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: 'None'}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read is None
+
+
+def test_env_client_request_timeout_env_var_is_empty_string():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: ''}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
+
+
+def test_env_client_request_timeout_env_var_is_zero():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '0'}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read

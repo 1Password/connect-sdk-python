@@ -68,5 +68,12 @@ class PathBuilder:
 
 def get_timeout() -> Timeout:
     """Get the timeout to be used in the HTTP Client"""
-    timeout = float(os.getenv(ENV_CLIENT_REQUEST_TIMEOUT, 0))
-    return timeout if timeout else DEFAULT_TIMEOUT_CONFIG
+    raw_timeout = os.getenv(ENV_CLIENT_REQUEST_TIMEOUT, 0.0)
+    if raw_timeout == 'None':
+        return Timeout(None)  # disable all timeouts
+    elif raw_timeout == '':
+        return DEFAULT_TIMEOUT_CONFIG
+    else:
+        timeout = float(raw_timeout)
+        t = timeout if timeout else DEFAULT_TIMEOUT_CONFIG
+        return t
