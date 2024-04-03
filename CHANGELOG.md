@@ -12,6 +12,15 @@
 
 ---
 
+[//]: # (START/v1.5.1)
+# v1.5.1
+
+## Fixes
+ * Fix default http client timeout. {#102}
+ * Update override http client timeout env var name in readme. {#105} 
+
+---
+
 [//]: # (START/v1.5.0)
 # v1.5.0
 
