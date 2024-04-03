@@ -3,6 +3,7 @@ import pytest
 from unittest import mock
 
 from httpx import Response
+from httpx._client import DEFAULT_TIMEOUT_CONFIG
 from onepasswordconnectsdk import client, models
 from onepasswordconnectsdk.utils import ENV_CLIENT_REQUEST_TIMEOUT
 
@@ -444,6 +445,11 @@ def generate_full_item():
                                                 id="Section_47DC4DDBF26640AB8B8618DA36D5A499"))],
                        sections=[models.Section(id="id", label="label")])
     return item
+
+
+def test_default_timeout():
+    client_instance = client.new_client(HOST, TOKEN)
+    assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
 
 
 def test_set_timeout_using_env_variable():
