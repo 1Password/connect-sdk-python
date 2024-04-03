@@ -1,11 +1,10 @@
 import os
 from typing import Union
 
-from httpx import USE_CLIENT_DEFAULT
-from httpx._client import UseClientDefault
+from httpx._config import DEFAULT_TIMEOUT_CONFIG
 
 UUIDLength = 26
-ENV_CLIENT_REQUEST_TIMEOUT = "OP_CONNECT_CLIENT_REQ_TIMEOUT"
+ENV_CLIENT_REQUEST_TIMEOUT = "OP_CONNECT_CLIENT_REQUEST_TIMEOUT"
 
 
 def is_valid_uuid(uuid):
@@ -68,7 +67,7 @@ class PathBuilder:
             self.path += f"?{query}"
 
 
-def get_timeout() -> Union[int, UseClientDefault]:
+def get_timeout() -> Union[int, DEFAULT_TIMEOUT_CONFIG]:
     """Get the timeout to be used in the HTTP Client"""
     timeout = int(os.getenv(ENV_CLIENT_REQUEST_TIMEOUT, 0))
-    return timeout if timeout else USE_CLIENT_DEFAULT
+    return timeout if timeout else DEFAULT_TIMEOUT_CONFIG
