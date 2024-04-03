@@ -24,7 +24,6 @@ class AsyncClient:
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str) -> httpx.AsyncClient:
-        # import here to avoid circular import
         return httpx.AsyncClient(base_url=url, headers=self.build_headers(token), timeout=get_timeout())
 
     def build_headers(self, token: str) -> Dict[str, str]:
