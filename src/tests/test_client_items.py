@@ -477,6 +477,18 @@ def test_env_client_request_timeout_env_var_is_empty_string():
         assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
 
 
+def test_env_client_request_timeout_env_var_is_single_space_string():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: ' '}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
+
+
+def test_env_client_request_timeout_env_var_is_not_numeric_string():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: 'abc'}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
+
+
 def test_env_client_request_timeout_env_var_is_zero():
     with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '0'}):
         client_instance = client.new_client(HOST, TOKEN)
