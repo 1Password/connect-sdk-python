@@ -493,3 +493,9 @@ def test_env_client_request_timeout_env_var_is_zero():
     with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '0'}):
         client_instance = client.new_client(HOST, TOKEN)
         assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
+
+
+def test_env_client_request_timeout_env_var_is_negative_number():
+    with mock.patch.dict(os.environ, {ENV_CLIENT_REQUEST_TIMEOUT: '-10'}):
+        client_instance = client.new_client(HOST, TOKEN)
+        assert client_instance.session.timeout.read == DEFAULT_TIMEOUT_CONFIG.read
