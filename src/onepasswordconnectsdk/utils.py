@@ -75,5 +75,4 @@ def get_timeout() -> Timeout:
         return DEFAULT_TIMEOUT_CONFIG
     else:
         timeout = float(raw_timeout)
-        t = timeout if timeout else DEFAULT_TIMEOUT_CONFIG
-        return t
+        return timeout if timeout else DEFAULT_TIMEOUT_CONFIG
