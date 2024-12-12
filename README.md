@@ -31,8 +31,9 @@ Check the [Python Connect SDK Example](example/README.md) to see an example of i
    export OP_CONNECT_HOST=<your-connect-host> && \
    export OP_CONNECT_TOKEN=<your-connect-token>
    ```
-   
+
    2.1 If you need a higher timeout on the client requests you can export `OP_CONNECT_CLIENT_REQ_TIMEOUT` environment variable:
+
    ```sh
    # set the timeout to 90 seconds
    export OP_CONNECT_CLIENT_REQ_TIMEOUT=90
@@ -94,6 +95,4 @@ For more examples of how to use the SDK, check out [USAGE.md](USAGE.md).
 
 1Password requests you practice responsible disclosure if you discover a vulnerability.
 
-Please file requests via [**BugCrowd**](https://bugcrowd.com/agilebits).
-
-For information about security practices, please visit the [1Password Bug Bounty Program](https://bugcrowd.com/agilebits).
+Please file requests by sending an email to bugbounty@agilebits.com.
