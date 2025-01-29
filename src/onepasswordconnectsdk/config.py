@@ -48,11 +48,14 @@ class ClientConfig:
             'base_url': base_url,
             'headers': headers,
             'timeout': timeout,
-            **self.httpx_options
         }
         
+        # Set verify from cafile first
         if self.cafile:
             args['verify'] = self.cafile
+            
+        # Allow httpx_options (including verify) to override
+        args.update(self.httpx_options)
             
         return args
 
