@@ -1,8 +1,10 @@
 import os
 import shlex
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, TYPE_CHECKING
 import httpx
-from onepasswordconnectsdk.client import Client
+
+if TYPE_CHECKING:
+    from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
     Item,
     ParsedField,
@@ -55,7 +57,7 @@ class ClientConfig:
         return args
 
 
-def load_dict(client: Client, config: dict):
+def load_dict(client: "Client", config: dict):
     """Load: Takes a dictionary with keys specifiying the user
     desired naming scheme of the values to return. Each key's
     value is a dictionary that includes information on where
@@ -122,7 +124,7 @@ def load_dict(client: Client, config: dict):
     return config_values
 
 
-def load(client: Client, config: object):
+def load(client: "Client", config: object):
     """Load: Takes a an object with class attributes annotated with tags
     describing where to find desired fields in 1Password. Manipulates given object
     and fills attributes in with 1Password item field values.
@@ -201,7 +203,7 @@ def _vault_uuid_for_field(field: str, vault_tag: dict):
 
 
 def _set_values_for_item(
-    client: Client,
+    client: "Client",
     parsed_item: ParsedItem,
     config_dict={},
     config_object: object = None,
