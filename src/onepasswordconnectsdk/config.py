@@ -1,6 +1,7 @@
 import os
 import shlex
-from typing import List, Dict
+from typing import List, Dict, Optional
+import httpx
 from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
     Item,
@@ -14,6 +15,44 @@ from onepasswordconnectsdk.models.constants import (
     VAULT_TAG,
     VAULT_ID_ENV_VARIABLE,
 )
+
+
+class ClientConfig:
+    """Configuration class for 1Password Connect client.
+    Inherits from httpx.BaseClient to support all httpx client options.
+    """
+    def __init__(self, cafile: Optional[str] = None, **kwargs):
+        """Initialize client configuration
+
+        Args:
+            cafile (Optional[str]): Path to CA certificate file for SSL verification
+            **kwargs: Additional httpx client options
+        """
+        self.cafile = cafile
+        self.httpx_options = kwargs
+
+    def get_client_args(self, base_url: str, headers: Dict[str, str], timeout: float) -> Dict:
+        """Get arguments for httpx client initialization
+
+        Args:
+            base_url (str): Base URL for the client
+            headers (Dict[str, str]): Headers to include in requests
+            timeout (float): Request timeout in seconds
+
+        Returns:
+            Dict: Arguments for httpx client initialization
+        """
+        args = {
+            'base_url': base_url,
+            'headers': headers,
+            'timeout': timeout,
+            **self.httpx_options
+        }
+        
+        if self.cafile:
+            args['verify'] = self.cafile
+            
+        return args
 
 
 def load_dict(client: Client, config: dict):
