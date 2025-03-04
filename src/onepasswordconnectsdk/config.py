@@ -30,7 +30,7 @@ class ClientConfig:
             cafile (Optional[str]): Path to CA certificate file for SSL verification
             **kwargs: Additional httpx client options
         """
-        self.cafile = cafile
+        self.ca_file = ca_file
         self.httpx_options = kwargs
 
     def get_client_args(self, base_url: str, headers: Dict[str, str], timeout: float) -> Dict:
