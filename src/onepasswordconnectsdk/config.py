@@ -23,7 +23,7 @@ class ClientConfig:
     """Configuration class for 1Password Connect client.
     Inherits from httpx.BaseClient to support all httpx client options.
     """
-    def __init__(self, cafile: Optional[str] = None, **kwargs):
+    def __init__(self, ca_file: Optional[str] = None, **kwargs):
         """Initialize client configuration
 
         Args:
