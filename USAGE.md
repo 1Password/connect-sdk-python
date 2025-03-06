@@ -41,7 +41,7 @@ When connecting to a 1Password Connect server using HTTPS, you may need to confi
 from onepasswordconnectsdk.config import ClientConfig
 
 # Verify SSL using a custom CA certificate
-config = ClientConfig(cafile="path/to/ca.pem")
+config = ClientConfig(ca_file="path/to/ca.pem")
 client = new_client("https://connect.example.com", "your-token", config=config)
 
 # Disable SSL verification (not recommended for production)
@@ -56,7 +56,7 @@ The ClientConfig class accepts all httpx client options as keyword arguments. Th
 ```python
 # Configure timeouts and redirects
 config = ClientConfig(
-    cafile="path/to/ca.pem",
+    ca_file="path/to/ca.pem",
     timeout=30.0,              # 30 second timeout
     follow_redirects=True,     # Follow HTTP redirects
     max_redirects=5           # Maximum number of redirects to follow
@@ -85,7 +85,7 @@ The same configuration options work for both synchronous and asynchronous client
 
 ```python
 config = ClientConfig(
-    cafile="path/to/ca.pem",
+    ca_file="path/to/ca.pem",
     timeout=30.0
 )
 async_client = new_client("https://connect.example.com", "your-token", is_async=True, config=config)

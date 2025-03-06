@@ -2,8 +2,8 @@ import pytest
 from onepasswordconnectsdk.config import ClientConfig
 import httpx
 
-def test_client_config_with_cafile():
-    config = ClientConfig(cafile="path/to/ca.pem")
+def test_client_config_with_ca_file():
+    config = ClientConfig(ca_file="path/to/ca.pem")
     args = config.get_client_args("https://test.com", {"Authorization": "Bearer token"}, 30.0)
     
     assert args["verify"] == "path/to/ca.pem"
@@ -13,7 +13,7 @@ def test_client_config_with_cafile():
 
 def test_client_config_with_kwargs():
     config = ClientConfig(
-        cafile="path/to/ca.pem",
+        ca_file="path/to/ca.pem",
         follow_redirects=True,
         timeout=60.0
     )
@@ -25,16 +25,16 @@ def test_client_config_with_kwargs():
     assert args["timeout"] == 60.0
 
 def test_client_config_verify_override():
-    # When verify is explicitly set in kwargs, it should override cafile
+    # When verify is explicitly set in kwargs, it should override ca_file
     config = ClientConfig(
-        cafile="path/to/ca.pem",
+        ca_file="path/to/ca.pem",
         verify=False
     )
     args = config.get_client_args("https://test.com", {"Authorization": "Bearer token"}, 30.0)
     
     assert args["verify"] == False
 
-def test_client_config_no_cafile():
+def test_client_config_no_ca_file():
     config = ClientConfig()
     args = config.get_client_args("https://test.com", {"Authorization": "Bearer token"}, 30.0)
     

@@ -25,7 +25,7 @@ def list_vault_secrets():
     try:
         # Configure client with CA certificate verification
         config = ClientConfig(
-            cafile=CA_FILE,
+            ca_file=CA_FILE,
             timeout=30.0  # 30 second timeout
         )
         
@@ -53,7 +53,7 @@ async def list_vault_secrets_async():
     try:
         # Configure client with CA certificate verification
         config = ClientConfig(
-            cafile=CA_FILE,
+            ca_file=CA_FILE,
             timeout=30.0  # 30 second timeout
         )
         

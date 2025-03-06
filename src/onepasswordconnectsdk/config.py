@@ -27,7 +27,7 @@ class ClientConfig:
         """Initialize client configuration
 
         Args:
-            cafile (Optional[str]): Path to CA certificate file for SSL verification
+            ca_file (Optional[str]): Path to CA certificate file for SSL verification
             **kwargs: Additional httpx client options
         """
         self.ca_file = ca_file
@@ -50,9 +50,9 @@ class ClientConfig:
             'timeout': timeout,
         }
         
-        # Set verify from cafile first
-        if self.cafile:
-            args['verify'] = self.cafile
+        # Set verify from ca_file first
+        if self.ca_file:
+            args['verify'] = self.ca_file
             
         # Allow httpx_options (including verify) to override
         args.update(self.httpx_options)
