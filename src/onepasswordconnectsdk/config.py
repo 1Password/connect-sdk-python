@@ -1,7 +1,10 @@
 import os
 import shlex
-from typing import List, Dict
-from onepasswordconnectsdk.client import Client
+from typing import List, Dict, Optional, TYPE_CHECKING
+import httpx
+
+if TYPE_CHECKING:
+    from onepasswordconnectsdk.client import Client
 from onepasswordconnectsdk.models import (
     Item,
     ParsedField,
@@ -16,7 +19,48 @@ from onepasswordconnectsdk.models.constants import (
 )
 
 
-def load_dict(client: Client, config: dict):
+class ClientConfig:
+    """Configuration class for 1Password Connect client.
+    Inherits from httpx.BaseClient to support all httpx client options.
+    """
+    def __init__(self, ca_file: Optional[str] = None, **kwargs):
+        """Initialize client configuration
+
+        Args:
+            ca_file (Optional[str]): Path to CA certificate file for SSL verification
+            **kwargs: Additional httpx client options
+        """
+        self.ca_file = ca_file
+        self.httpx_options = kwargs
+
+    def get_client_args(self, base_url: str, headers: Dict[str, str], timeout: float) -> Dict:
+        """Get arguments for httpx client initialization
+
+        Args:
+            base_url (str): Base URL for the client
+            headers (Dict[str, str]): Headers to include in requests
+            timeout (float): Request timeout in seconds
+
+        Returns:
+            Dict: Arguments for httpx client initialization
+        """
+        args = {
+            'base_url': base_url,
+            'headers': headers,
+            'timeout': timeout,
+        }
+        
+        # Set verify from ca_file first
+        if self.ca_file:
+            args['verify'] = self.ca_file
+            
+        # Allow httpx_options (including verify) to override
+        args.update(self.httpx_options)
+            
+        return args
+
+
+def load_dict(client: "Client", config: dict):
     """Load: Takes a dictionary with keys specifiying the user
     desired naming scheme of the values to return. Each key's
     value is a dictionary that includes information on where
@@ -83,7 +127,7 @@ def load_dict(client: Client, config: dict):
     return config_values
 
 
-def load(client: Client, config: object):
+def load(client: "Client", config: object):
     """Load: Takes a an object with class attributes annotated with tags
     describing where to find desired fields in 1Password. Manipulates given object
     and fills attributes in with 1Password item field values.
@@ -162,7 +206,7 @@ def _vault_uuid_for_field(field: str, vault_tag: dict):
 
 
 def _set_values_for_item(
-    client: Client,
+    client: "Client",
     parsed_item: ParsedItem,
     config_dict={},
     config_object: object = None,

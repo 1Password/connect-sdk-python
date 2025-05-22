@@ -2,10 +2,11 @@
 import httpx
 from httpx import HTTPError, USE_CLIENT_DEFAULT
 import json
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 import os
 
 from onepasswordconnectsdk.async_client import AsyncClient
+from onepasswordconnectsdk.config import ClientConfig
 from onepasswordconnectsdk.serializer import Serializer
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
@@ -24,15 +25,29 @@ ENV_IS_ASYNC_CLIENT = "OP_CONNECT_CLIENT_ASYNC"
 class Client:
     """Python Client Class"""
 
-    def __init__(self, url: str, token: str) -> None:
-        """Initialize client"""
+    def __init__(self, url: str, token: str, config: Optional[ClientConfig] = None) -> None:
+        """Initialize client
+        
+        Args:
+            url (str): The url of the 1Password Connect API
+            token (str): The 1Password Service Account token
+            config (Optional[ClientConfig]): Optional configuration for httpx client
+        """
         self.url = url
         self.token = token
+        self.config = config
         self.session = self.create_session(url, token)
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str) -> httpx.Client:
-        return httpx.Client(base_url=url, headers=self.build_headers(token), timeout=get_timeout())
+        headers = self.build_headers(token)
+        timeout = get_timeout()
+        
+        if self.config:
+            client_args = self.config.get_client_args(url, headers, timeout)
+            return httpx.Client(**client_args)
+            
+        return httpx.Client(base_url=url, headers=headers, timeout=timeout)
 
     def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
@@ -381,19 +396,21 @@ class Client:
         return self.serializer.sanitize_for_serialization(obj)
 
 
-def new_client(url: str, token: str, is_async: bool = False) -> Union[AsyncClient, Client]:
+def new_client(url: str, token: str, is_async: bool = False, config: Optional[ClientConfig] = None) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
-    Parameters:
-    url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
-    is_async: Initialize async or sync client
-
+    
+    Args:
+        url (str): The url of the 1Password Connect API
+        token (str): The 1Password Service Account token
+        is_async (bool): Initialize async or sync client
+        config (Optional[ClientConfig]): Optional configuration for httpx client
+        
     Returns:
-    Client: The 1Password Connect client
+        Union[AsyncClient, Client]: The 1Password Connect client
     """
     if is_async:
-        return AsyncClient(url, token)
-    return Client(url, token)
+        return AsyncClient(url, token, config)
+    return Client(url, token, config)
 
 
 def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:

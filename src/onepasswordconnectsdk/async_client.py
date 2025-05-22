@@ -1,10 +1,11 @@
 """Python AsyncClient for connecting to 1Password Connect"""
 import httpx
 from httpx import HTTPError
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 import os
 
 from onepasswordconnectsdk.serializer import Serializer
+from onepasswordconnectsdk.config import ClientConfig
 from onepasswordconnectsdk.utils import build_headers, is_valid_uuid, PathBuilder, get_timeout
 from onepasswordconnectsdk.errors import (
     FailedToRetrieveItemException,
@@ -16,15 +17,29 @@ from onepasswordconnectsdk.models import File, Item, ItemVault, SummaryItem, Vau
 class AsyncClient:
     """Python Async Client Class"""
 
-    def __init__(self, url: str, token: str) -> None:
-        """Initialize async client"""
+    def __init__(self, url: str, token: str, config: Optional[ClientConfig] = None) -> None:
+        """Initialize async client
+        
+        Args:
+            url (str): The url of the 1Password Connect API
+            token (str): The 1Password Service Account token
+            config (Optional[ClientConfig]): Optional configuration for httpx client
+        """
         self.url = url
         self.token = token
+        self.config = config
         self.session = self.create_session(url, token)
         self.serializer = Serializer()
 
     def create_session(self, url: str, token: str) -> httpx.AsyncClient:
-        return httpx.AsyncClient(base_url=url, headers=self.build_headers(token), timeout=get_timeout())
+        headers = self.build_headers(token)
+        timeout = get_timeout()
+        
+        if self.config:
+            client_args = self.config.get_client_args(url, headers, timeout)
+            return httpx.AsyncClient(**client_args)
+            
+        return httpx.AsyncClient(base_url=url, headers=headers, timeout=timeout)
 
     def build_headers(self, token: str) -> Dict[str, str]:
         return build_headers(token)
