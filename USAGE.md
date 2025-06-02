@@ -29,6 +29,70 @@ connect_async_client: Client = new_client(
     True)
 ```
 
+## Client Configuration
+
+The SDK provides a `ClientConfig` class that allows you to configure the underlying httpx client. This includes SSL certificate verification and all other httpx client options.
+
+### SSL Certificate Verification
+
+When connecting to a 1Password Connect server using HTTPS, you may need to configure SSL certificate verification:
+
+```python
+from onepasswordconnectsdk.config import ClientConfig
+
+# Verify SSL using a custom CA certificate
+config = ClientConfig(ca_file="path/to/ca.pem")
+client = new_client("https://connect.example.com", "your-token", config=config)
+
+# Disable SSL verification (not recommended for production)
+config = ClientConfig(verify=False)
+client = new_client("https://connect.example.com", "your-token", config=config)
+```
+
+### Additional Configuration Options
+
+The ClientConfig class accepts all httpx client options as keyword arguments. These options are passed directly to the underlying httpx client:
+
+```python
+# Configure timeouts and redirects
+config = ClientConfig(
+    ca_file="path/to/ca.pem",
+    timeout=30.0,              # 30 second timeout
+    follow_redirects=True,     # Follow HTTP redirects
+    max_redirects=5           # Maximum number of redirects to follow
+)
+
+# Configure proxy settings
+config = ClientConfig(
+    proxies={
+        "http://": "http://proxy.example.com",
+        "https://": "https://proxy.example.com"
+    }
+)
+
+# Configure custom headers
+config = ClientConfig(
+    headers={
+        "User-Agent": "CustomApp/1.0",
+        "X-Custom-Header": "value"
+    }
+)
+```
+
+### Async Client Configuration
+
+The same configuration options work for both synchronous and asynchronous clients:
+
+```python
+config = ClientConfig(
+    ca_file="path/to/ca.pem",
+    timeout=30.0
+)
+async_client = new_client("https://connect.example.com", "your-token", is_async=True, config=config)
+```
+
+For a complete list of available configuration options, see the [httpx client documentation](https://www.python-httpx.org/api/#client).
+
 ## Environment Variables
 
 - **OP_CONNECT_TOKEN** – The token to be used to authenticate with the 1Password Connect API.
