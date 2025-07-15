@@ -1,8 +1,12 @@
+name: Open Release PR for review
+
 on:
   create:
     branches:
 
-name: Open Release PR for review
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   # This job is necessary because GitHub does not (yet) support
