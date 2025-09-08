@@ -12,7 +12,7 @@ repository = "https://github.com/1Password/connect-sdk-python"
 "Report Security Issue" = "https://bugcrowd.com/agilebits"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 python-dateutil = "^2.8.1"
 httpx = "^0.28.1"
 
