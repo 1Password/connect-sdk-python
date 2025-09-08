@@ -23,5 +23,5 @@ pytest-cov = "^6.3.0"
 respx = "^0.22.0"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
