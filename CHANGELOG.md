@@ -16,7 +16,7 @@
 # v2.0.0
 
 ## 🔴 Breaking changes
-* Minimum supported python version is 3.10. {#125}
+* Requires Python 3.10 or newer. {#125}
 
 ## 🚀 Features
   * Added ConfigClass for HTTPX to simplify configuration. {#118}
