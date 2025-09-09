@@ -12,6 +12,22 @@
 
 ---
 
+[//]: # (START/v2.0.0)
+# v2.0.0
+
+## 🔴 Breaking changes
+* Requires Python 3.10 or newer. {#125}
+
+## 🚀 Features
+  * Added ConfigClass for HTTPX to simplify configuration. {#118}
+
+## 🔧 Fixes
+ * Updated to HTTPX v0.28.1. {#121}
+ * Bumped certifi from 2023.7.22 to 2024.7.4. {#114}
+ * Bumped idna from 3.4 to 3.7. {#107}
+
+---
+
 [//]: # (START/v1.5.1)
 # v1.5.1
 
