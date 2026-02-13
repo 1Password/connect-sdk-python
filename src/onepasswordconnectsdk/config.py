@@ -205,6 +205,56 @@ def _vault_uuid_for_field(field: str, vault_tag: dict):
     )
 
 
+def _match_field(field, field_identifier, section_path, sections):
+    """Check if a field matches the given identifier and section.
+
+    Args:
+        field: The item field to check.
+        field_identifier (str): The value to match against (label or id).
+        section_path (str): The section part of the field path.
+        sections (dict): Mapping of section labels/ids to section ids.
+
+    Returns:
+        bool: True if the field matches the identifier and section.
+    """
+    try:
+        section_id = field.section.id
+    except AttributeError:
+        section_id = None
+
+    return (
+        section_id is None
+        or (section_id == sections.get(section_path))
+        or section_path in sections.values()
+    )
+
+
+def _find_field(item_fields, field_identifier, section_path, sections, match_attr):
+    """Search for a field by a given attribute (label or id).
+
+    Args:
+        item_fields (list): The list of fields on the item.
+        field_identifier (str): The value to match against.
+        section_path (str): The section part of the field path.
+        sections (dict): Mapping of section labels/ids to section ids.
+        match_attr (str): The field attribute to compare against
+            (e.g. "label" or "id").
+
+    Returns:
+        Field or None: The matching field, or None if not found.
+    """
+    for field in item_fields:
+        if getattr(field, match_attr, None) == field_identifier:
+            if _match_field(field, field_identifier, section_path, sections):
+                return field
+    return None
+
+
+# The order in which field attributes are checked during lookup.
+# Label is tried first; if no match, id is tried as a fallback.
+FIELD_MATCH_ATTRIBUTES = ("label", "id")
+
+
 def _set_values_for_item(
     client: "Client",
     parsed_item: ParsedItem,
@@ -230,38 +280,49 @@ def _set_values_for_item(
                 {parsed_field.name}"
             )
 
-        value_found = False
-        for field in item.fields:
-            try:
-                section_id = field.section.id
-            except AttributeError:
-                section_id = None
-                
-            if field.label == path_parts[1]:
-                if (
-                    section_id is None
-                    or (section_id == sections.get(path_parts[0]))
-                    or path_parts[0] in sections.values()
-                ):
-                    value_found = True
+        section_path = path_parts[0]
+        field_identifier = path_parts[1]
 
-                    if config_object:
-                        setattr(config_object, parsed_field.name, field.value)
-                    else:
-                        config_dict[parsed_field.name] = field.value
-                    break
-        if not value_found:
+        matched_field = None
+        for attr in FIELD_MATCH_ATTRIBUTES:
+            matched_field = _find_field(
+                item.fields, field_identifier, section_path, sections, attr
+            )
+            if matched_field:
+                break
+
+        if matched_field:
+            if config_object:
+                setattr(config_object, parsed_field.name, matched_field.value)
+            else:
+                config_dict[parsed_field.name] = matched_field.value
+        else:
             raise UnknownSectionAndFieldTag(
-                f"There is no section {path_parts[0]} \
-                for field {path_parts[1]}"
+                f"There is no section {section_path} \
+                for field {field_identifier}"
             )
 
 
 def _convert_sections_to_dict(sections: List[Section]):
+    """Convert a list of sections into a lookup dict.
+
+    Builds a mapping that supports lookup by both section label and
+    section id. Label-based keys take priority — an id-based key is
+    only added when it does not collide with an existing label key.
+
+    Args:
+        sections (List[Section]): The sections from a 1Password item.
+
+    Returns:
+        dict: A mapping of section label/id to section id.
+    """
     if not sections:
         return {}
 
     section_dict = {section.label: section.id for section in sections}
+    for section in sections:
+        if section.id not in section_dict:
+            section_dict[section.id] = section.id
     return section_dict
 
 
