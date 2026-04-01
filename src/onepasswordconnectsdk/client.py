@@ -27,7 +27,7 @@ class Client:
 
     def __init__(self, url: str, token: str, config: Optional[ClientConfig] = None) -> None:
         """Initialize client
-        
+
         Args:
             url (str): The url of the 1Password Connect API
             token (str): The 1Password Service Account token
@@ -42,11 +42,11 @@ class Client:
     def create_session(self, url: str, token: str) -> httpx.Client:
         headers = self.build_headers(token)
         timeout = get_timeout()
-        
+
         if self.config:
             client_args = self.config.get_client_args(url, headers, timeout)
             return httpx.Client(**client_args)
-            
+
         return httpx.Client(base_url=url, headers=headers, timeout=timeout)
 
     def build_headers(self, token: str) -> Dict[str, str]:
@@ -122,10 +122,14 @@ class Client:
         if not is_valid_uuid(vault):
             vault_id = self.get_vault_by_title(vault).id
 
-        if is_valid_uuid(item):
-            return self.get_item_by_id(item, vault_id)
-        else:
+        if not is_valid_uuid(item):
             return self.get_item_by_title(item, vault_id)
+        try:
+            return self.get_item_by_id(item, vault_id)
+        except FailedToRetrieveItemException as exc:
+            if exc.status_code == 404:
+                return self.get_item_by_title(item, vault_id)
+            raise
 
     def get_item_by_id(self, item_id: str, vault_id: str) -> Item:
         """Get a specific item by uuid
@@ -148,7 +152,8 @@ class Client:
         except HTTPError:
             raise FailedToRetrieveItemException(
                 f"Unable to retrieve item. Received {response.status_code}\
-                     for {url} with message: {response.json().get('message')}"
+                     for {url} with message: {response.json().get('message')}",
+                status_code=response.status_code,
             )
         return self.serializer.deserialize(response.content, "Item")
 
@@ -398,13 +403,13 @@ class Client:
 
 def new_client(url: str, token: str, is_async: bool = False, config: Optional[ClientConfig] = None) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
-    
+
     Args:
         url (str): The url of the 1Password Connect API
         token (str): The 1Password Service Account token
         is_async (bool): Initialize async or sync client
         config (Optional[ClientConfig]): Optional configuration for httpx client
-        
+
     Returns:
         Union[AsyncClient, Client]: The 1Password Connect client
     """

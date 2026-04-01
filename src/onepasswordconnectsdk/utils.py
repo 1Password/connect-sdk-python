@@ -7,7 +7,7 @@ ENV_CLIENT_REQUEST_TIMEOUT = "OP_CONNECT_CLIENT_REQ_TIMEOUT"
 
 
 def is_valid_uuid(uuid):
-    if len(uuid) is not UUIDLength:
+    if len(uuid) != UUIDLength:
         return False
     for c in uuid:
         valid = (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9')

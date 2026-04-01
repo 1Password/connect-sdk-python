@@ -19,7 +19,7 @@ class AsyncClient:
 
     def __init__(self, url: str, token: str, config: Optional[ClientConfig] = None) -> None:
         """Initialize async client
-        
+
         Args:
             url (str): The url of the 1Password Connect API
             token (str): The 1Password Service Account token
@@ -34,11 +34,11 @@ class AsyncClient:
     def create_session(self, url: str, token: str) -> httpx.AsyncClient:
         headers = self.build_headers(token)
         timeout = get_timeout()
-        
+
         if self.config:
             client_args = self.config.get_client_args(url, headers, timeout)
             return httpx.AsyncClient(**client_args)
-            
+
         return httpx.AsyncClient(base_url=url, headers=headers, timeout=timeout)
 
     def build_headers(self, token: str) -> Dict[str, str]:
@@ -115,10 +115,14 @@ class AsyncClient:
             vault = await self.get_vault_by_title(vault)
             vault_id = vault.id
 
-        if is_valid_uuid(item):
-            return await self.get_item_by_id(item, vault_id)
-        else:
+        if not is_valid_uuid(item):
             return await self.get_item_by_title(item, vault_id)
+        try:
+            return await self.get_item_by_id(item, vault_id)
+        except FailedToRetrieveItemException as exc:
+            if exc.status_code == 404:
+                return await self.get_item_by_title(item, vault_id)
+            raise
 
     async def get_item_by_id(self, item_id: str, vault_id: str) -> Item:
         """Get a specific item by uuid
@@ -141,7 +145,8 @@ class AsyncClient:
         except HTTPError:
             raise FailedToRetrieveItemException(
                 f"Unable to retrieve item. Received {response.status_code}\
-                     for {url} with message: {response.json().get('message')}"
+                     for {url} with message: {response.json().get('message')}",
+                status_code=response.status_code,
             )
         return self.serializer.deserialize(response.content, "Item")
 
