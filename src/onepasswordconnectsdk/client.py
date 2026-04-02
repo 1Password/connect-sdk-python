@@ -27,7 +27,7 @@ class Client:
 
     def __init__(self, url: str, token: str, config: Optional[ClientConfig] = None) -> None:
         """Initialize client
-        
+
         Args:
             url (str): The url of the 1Password Connect API
             token (str): The 1Password Service Account token
@@ -42,11 +42,11 @@ class Client:
     def create_session(self, url: str, token: str) -> httpx.Client:
         headers = self.build_headers(token)
         timeout = get_timeout()
-        
+
         if self.config:
             client_args = self.config.get_client_args(url, headers, timeout)
             return httpx.Client(**client_args)
-            
+
         return httpx.Client(base_url=url, headers=headers, timeout=timeout)
 
     def build_headers(self, token: str) -> Dict[str, str]:
@@ -398,13 +398,13 @@ class Client:
 
 def new_client(url: str, token: str, is_async: bool = False, config: Optional[ClientConfig] = None) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
-    
+
     Args:
         url (str): The url of the 1Password Connect API
         token (str): The 1Password Service Account token
         is_async (bool): Initialize async or sync client
         config (Optional[ClientConfig]): Optional configuration for httpx client
-        
+
     Returns:
         Union[AsyncClient, Client]: The 1Password Connect client
     """
@@ -413,18 +413,19 @@ def new_client(url: str, token: str, is_async: bool = False, config: Optional[Cl
     return Client(url, token, config)
 
 
-def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
+def new_client_from_environment(
+    url: Optional[str] = None, token: Optional[str] = None
+) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
-    using the OP_TOKEN environment variable
+    using OP_CONNECT_HOST and OP_CONNECT_TOKEN when url or token are omitted.
 
     Parameters:
-    url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
+    url: The url of the 1Password Connect API; if omitted, read from OP_CONNECT_HOST.
+    token: The Connect token; if omitted, read from OP_CONNECT_TOKEN.
 
     Returns:
-    Client: The 1Password Connect client
+    Union[AsyncClient, Client]: The 1Password Connect client (async if OP_CONNECT_CLIENT_ASYNC is True).
     """
-    token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
     is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
 
     if url is None:
@@ -435,9 +436,12 @@ def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
             )
 
     if token is None:
-        raise EnvironmentTokenNotSetException(
-            "There is no token available in the "
-            f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
-        )
+        token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
+        if token is None:
+            raise EnvironmentTokenNotSetException(
+                "There is no token available in the "
+                f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
+            )
 
     return new_client(url, token, is_async)
+
