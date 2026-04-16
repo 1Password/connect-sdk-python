@@ -11,6 +11,8 @@ VAULT_ID = "hfnjvi6aymbsnfc2xeeoheizda"
 VAULT_TITLE = "VaultA"
 ITEM_ID = "wepiqdxdzncjtnvmv5fegud4qy"
 ITEM_TITLE = "Test Login"
+# 26 lowercase alphanumeric chars: treated as item id by is_valid_uuid but may be a title (#80)
+ITEM_TITLE_26_CHARS = "abcdefghijklmnop1234567890"
 HOST = "https://mock_host"
 TOKEN = "jwt_token"
 SS_CLIENT = client.new_client(HOST, TOKEN)
@@ -193,6 +195,58 @@ async def test_get_item_by_item_title_vault_title_async(respx_mock):
     assert item_mock.called
 
 
+def test_get_item_26_char_title_falls_back_from_id_to_title(respx_mock):
+    """Item titles matching the SDK item-id shape should resolve via title after 404 on id."""
+    expected_item = get_item()
+    expected_path_by_id = f"/v1/vaults/{VAULT_ID}/items/{ITEM_TITLE_26_CHARS}"
+    expected_path_by_title = (
+        f'/v1/vaults/{VAULT_ID}/items?filter=title eq "{ITEM_TITLE_26_CHARS}"'
+    )
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    by_id_mock = respx_mock.get(expected_path_by_id).mock(
+        return_value=Response(404, json={"message": "not found"})
+    )
+    items_by_title_mock = respx_mock.get(expected_path_by_title).mock(
+        return_value=Response(200, json=get_items_with_title(ITEM_TITLE_26_CHARS))
+    )
+    item_mock = respx_mock.get(expected_path_item).mock(
+        return_value=Response(200, json=expected_item)
+    )
+
+    item = SS_CLIENT.get_item(ITEM_TITLE_26_CHARS, VAULT_ID)
+    compare_items(expected_item, item)
+    assert by_id_mock.called
+    assert items_by_title_mock.called
+    assert item_mock.called
+
+
+@pytest.mark.asyncio
+async def test_get_item_26_char_title_falls_back_from_id_to_title_async(respx_mock):
+    expected_item = get_item()
+    expected_path_by_id = f"/v1/vaults/{VAULT_ID}/items/{ITEM_TITLE_26_CHARS}"
+    expected_path_by_title = (
+        f'/v1/vaults/{VAULT_ID}/items?filter=title eq "{ITEM_TITLE_26_CHARS}"'
+    )
+    expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
+
+    by_id_mock = respx_mock.get(expected_path_by_id).mock(
+        return_value=Response(404, json={"message": "not found"})
+    )
+    items_by_title_mock = respx_mock.get(expected_path_by_title).mock(
+        return_value=Response(200, json=get_items_with_title(ITEM_TITLE_26_CHARS))
+    )
+    item_mock = respx_mock.get(expected_path_item).mock(
+        return_value=Response(200, json=expected_item)
+    )
+
+    item = await SS_CLIENT_ASYNC.get_item(ITEM_TITLE_26_CHARS, VAULT_ID)
+    compare_items(expected_item, item)
+    assert by_id_mock.called
+    assert items_by_title_mock.called
+    assert item_mock.called
+
+
 def test_get_items(respx_mock):
     expected_items = get_items()
     expected_path = f"/v1/vaults/{VAULT_ID}/items"
@@ -344,6 +398,12 @@ def compare_fields(expected_field, returned_field):
 def compare_sections(expected_section, returned_section):
     assert expected_section.get("id") == returned_section.id
     assert expected_section.get("label") == returned_section.label
+
+
+def get_items_with_title(title: str):
+    row = dict(get_items()[0])
+    row["title"] = title
+    return [row]
 
 
 def get_items():
