@@ -418,18 +418,19 @@ def new_client(url: str, token: str, is_async: bool = False, config: Optional[Cl
     return Client(url, token, config)
 
 
-def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
+def new_client_from_environment(
+    url: Optional[str] = None, token: Optional[str] = None
+) -> Union[AsyncClient, Client]:
     """Builds a new client for interacting with 1Password Connect
-    using the OP_TOKEN environment variable
+    using OP_CONNECT_HOST and OP_CONNECT_TOKEN when url or token are omitted.
 
     Parameters:
-    url: The url of the 1Password Connect API
-    token: The 1Password Service Account token
+    url: The url of the 1Password Connect API; if omitted, read from OP_CONNECT_HOST.
+    token: The Connect token; if omitted, read from OP_CONNECT_TOKEN.
 
     Returns:
-    Client: The 1Password Connect client
+    Union[AsyncClient, Client]: The 1Password Connect client (async if OP_CONNECT_CLIENT_ASYNC is True).
     """
-    token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
     is_async = os.environ.get(ENV_IS_ASYNC_CLIENT) == "True"
 
     if url is None:
@@ -440,9 +441,12 @@ def new_client_from_environment(url: str = None) -> Union[AsyncClient, Client]:
             )
 
     if token is None:
-        raise EnvironmentTokenNotSetException(
-            "There is no token available in the "
-            f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
-        )
+        token = os.environ.get(ENV_SERVICE_ACCOUNT_JWT_VARIABLE)
+        if token is None:
+            raise EnvironmentTokenNotSetException(
+                "There is no token available in the "
+                f"{ENV_SERVICE_ACCOUNT_JWT_VARIABLE} variable"
+            )
 
     return new_client(url, token, is_async)
+
