@@ -15,8 +15,10 @@
 [//]: # (START/v2.1.0)
 # v2.1.0
 
+## Features
+ * Update `new_client_from_environment()` to support optional token parameter, matching URL parameter behavior. {#88}
+
 ## Fixes
- * Fix `new_client_from_environment()` to support optional token parameter, matching URL parameter behavior. {#88}
  * Fix `get_item()` to successfully retrieve items with 26-character titles by adding fallback to title search when ID lookup fails. {#80}
  * Updated Slack developer link in documentation. {#130}
 
