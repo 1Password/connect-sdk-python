@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "onepasswordconnectsdk"
-version = "2.0.0"
+version = "2.1.0"
 description = "Python SDK for 1Password Connect"
 license = "MIT"
 authors = ["1Password"]

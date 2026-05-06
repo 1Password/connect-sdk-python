@@ -12,6 +12,18 @@
 
 ---
 
+[//]: # (START/v2.1.0)
+# v2.1.0
+
+## Features
+ * Update `new_client_from_environment()` to support optional token parameter, matching URL parameter behavior. {#88}
+
+## Fixes
+ * Fix `get_item()` to successfully retrieve items with 26-character titles by adding fallback to title search when ID lookup fails. {#80}
+ * Updated Slack developer link in documentation. {#130}
+
+---
+
 [//]: # (START/v2.0.0)
 # v2.0.0
 
@@ -33,7 +45,7 @@
 
 ## Fixes
  * Fix default http client timeout. {#102}
- * Update override http client timeout env var name in readme. {#105} 
+ * Update override http client timeout env var name in readme. {#105}
 
 ---
 
