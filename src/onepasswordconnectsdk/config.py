@@ -49,14 +49,14 @@ class ClientConfig:
             'headers': headers,
             'timeout': timeout,
         }
-        
+
         # Set verify from ca_file first
         if self.ca_file:
             args['verify'] = self.ca_file
-            
+
         # Allow httpx_options (including verify) to override
         args.update(self.httpx_options)
-            
+
         return args
 
 
@@ -100,7 +100,7 @@ def load_dict(client: "Client", config: dict):
     """
 
     items: dict = {}
-    config_values: Dict[str, str] = {}
+    config_values: Dict[str, Optional[str]] = {}
 
     for field, tags in config.items():
         item_tag = tags.get(ITEM_TAG)
@@ -236,7 +236,7 @@ def _set_values_for_item(
                 section_id = field.section.id
             except AttributeError:
                 section_id = None
-                
+
             if field.label == path_parts[1]:
                 if (
                     section_id is None

@@ -73,6 +73,31 @@ def test_load_dict(respx_mock):
     assert config_with_values['password'] == PASSWORD_VALUE
 
 
+def test_load_dict_empty_field_returns_none(respx_mock):
+    config_dict = {
+        "username": {
+            "opitem": ITEM_NAME1,
+            "opfield": ".username",
+            "opvault": VAULT_ID
+        },
+        "empty": {
+            "opitem": ITEM_NAME1,
+            "opfield": ".empty_field",
+            "opvault": VAULT_ID
+        }
+    }
+
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_NAME1}\"").mock(
+        return_value=Response(200, json=[item_with_empty_field]))
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items/{ITEM_ID1}").mock(
+        return_value=Response(200, json=item_with_empty_field))
+
+    config_with_values = onepasswordconnectsdk.load_dict(SS_CLIENT, config_dict)
+
+    assert config_with_values['username'] == USERNAME_VALUE
+    assert config_with_values['empty'] is None
+
+
 item = {
     "id": ITEM_ID1,
     "title": ITEM_NAME1,
@@ -99,6 +124,26 @@ item = {
             "id": "username",
             "label": "username",
             "value": USERNAME_VALUE
+        }
+    ]
+}
+
+item_with_empty_field = {
+    "id": ITEM_ID1,
+    "title": ITEM_NAME1,
+    "vault": {
+        "id": VAULT_ID
+    },
+    "category": "LOGIN",
+    "fields": [
+        {
+            "id": "username",
+            "label": "username",
+            "value": USERNAME_VALUE
+        },
+        {
+            "id": "empty_field",
+            "label": "empty_field"
         }
     ]
 }
