@@ -13,6 +13,8 @@
 
 The 1Password Connect SDK provides access to 1Password via [1Password Connect](https://developer.1password.com/docs/connect) hosted in your infrastructure. The library is intended to be used by Python applications to simplify accessing items in 1Password vaults.
 
+*This project is licensed under [MIT](./LICENSE.md). Use of the 1Password APIs and services accessed through these tools is governed by the [1Password API Terms of Service](https://1password.com/legal/api-sdk-terms-of-service).*
+
 ## 🪄 See it in action
 
 Check the [Python Connect SDK Example](example/README.md) to see an example of item manipulation using the SDK that you can execute on your machine.
