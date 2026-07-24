@@ -179,13 +179,15 @@ class Client:
         except HTTPError:
             raise FailedToRetrieveItemException(
                 f"Unable to retrieve items. Received {response.status_code} \
-                     for {url} with message: {response.json().get('message')}"
+                     for {url} with message: {response.json().get('message')}",
+                status_code=response.status_code
             )
 
         if len(response.json()) != 1:
             raise FailedToRetrieveItemException(
                 f"Found {len(response.json())} items in vault {vault_id} with \
-                    title {title}"
+                    title {title}",
+                status_code=response.status_code
             )
 
         item_summary = self.serializer.deserialize(response.content, "list[SummaryItem]")[0]
@@ -216,7 +218,8 @@ class Client:
         except HTTPError:
             raise FailedToRetrieveItemException(
                 f"Unable to retrieve items. Received {response.status_code} \
-                     for {url} with message: {response.json().get('message')}"
+                     for {url} with message: {response.json().get('message')}",
+                status_code=response.status_code
             )
 
         return self.serializer.deserialize(response.content, "list[SummaryItem]")
