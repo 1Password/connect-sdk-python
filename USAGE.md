@@ -173,6 +173,8 @@ Users can create `classes` or `dicts` that describe fields they wish to get the 
 - **load_dict**: Takes a dictionary with keys specifying the user desired naming scheme of the values to return. Each key's value is a dictionary that includes information on where to find the item field value in 1Password. This returns a dictionary of user specified keys with values retrieved from 1Password.
 - **load**: Takes an object with class attributes annotated with tags describing where to find desired fields in 1Password. Manipulates given object and fills attributes in with 1Password item field values.
 
+The `opfield` tag uses `section.field` syntax. The section can be a section label or ID, and the field can be a field label or ID. Labels are tried first; IDs are used as a fallback when no matching label is found.
+
 ```python
 # example dict configuration for onepasswordconnectsdk.load_dict(connect_client, CONFIG)
 CONFIG = {
