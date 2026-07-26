@@ -98,6 +98,56 @@ def test_load_dict_empty_field_returns_none(respx_mock):
     assert config_with_values['empty'] is None
 
 
+def test_load_dict_resolves_field_by_id_when_label_differs(respx_mock):
+    config_dict = {
+        "host": {
+            "opitem": ITEM_NAME2,
+            "opfield": ".716C5B0E95A84092B2FE2CC402E0DDDF",
+            "opvault": VAULT_ID,
+        }
+    }
+
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_NAME2}\"").mock(
+        return_value=Response(200, json=[item2]))
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items/{ITEM_ID2}").mock(return_value=Response(200, json=item2))
+
+    config_with_values = onepasswordconnectsdk.load_dict(SS_CLIENT, config_dict)
+
+    assert config_with_values["host"] == HOST_VALUE
+
+
+def test_load_resolves_field_by_id_when_label_differs(respx_mock):
+    class ConfigByFieldID:
+        host: f'opitem:"{ITEM_NAME2}" opfield:.716C5B0E95A84092B2FE2CC402E0DDDF opvault:{VAULT_ID}' = None
+
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_NAME2}\"").mock(
+        return_value=Response(200, json=[item2]))
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items/{ITEM_ID2}").mock(return_value=Response(200, json=item2))
+
+    config_with_values = onepasswordconnectsdk.load(SS_CLIENT, ConfigByFieldID())
+
+    assert config_with_values.host == HOST_VALUE
+
+
+def test_load_dict_prefers_field_label_when_label_and_id_both_match(respx_mock):
+    config_dict = {
+        "selected": {
+            "opitem": ITEM_NAME1,
+            "opfield": ".username",
+            "opvault": VAULT_ID,
+        }
+    }
+
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_NAME1}\"").mock(
+        return_value=Response(200, json=[item_with_label_id_collision]))
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items/{ITEM_ID1}").mock(
+        return_value=Response(200, json=item_with_label_id_collision))
+
+    config_with_values = onepasswordconnectsdk.load_dict(SS_CLIENT, config_dict)
+
+    assert config_with_values["selected"] == USERNAME_VALUE
+
+
 item = {
     "id": ITEM_ID1,
     "title": ITEM_NAME1,
@@ -144,6 +194,27 @@ item_with_empty_field = {
         {
             "id": "empty_field",
             "label": "empty_field"
+        }
+    ]
+}
+
+item_with_label_id_collision = {
+    "id": ITEM_ID1,
+    "title": ITEM_NAME1,
+    "vault": {
+        "id": VAULT_ID
+    },
+    "category": "LOGIN",
+    "fields": [
+        {
+            "id": "primary_username_id",
+            "label": "username",
+            "value": USERNAME_VALUE
+        },
+        {
+            "id": "username",
+            "label": "api_username",
+            "value": "id fallback value"
         }
     ]
 }
