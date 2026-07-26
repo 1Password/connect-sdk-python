@@ -230,31 +230,40 @@ def _set_values_for_item(
                 {parsed_field.name}"
             )
 
-        value_found = False
-        for field in item.fields:
-            try:
-                section_id = field.section.id
-            except AttributeError:
-                section_id = None
-
-            if field.label == path_parts[1]:
-                if (
-                    section_id is None
-                    or (section_id == sections.get(path_parts[0]))
-                    or path_parts[0] in sections.values()
-                ):
-                    value_found = True
-
-                    if config_object:
-                        setattr(config_object, parsed_field.name, field.value)
-                    else:
-                        config_dict[parsed_field.name] = field.value
-                    break
-        if not value_found:
+        matched_field = _find_field(item.fields, sections, path_parts[0], path_parts[1])
+        if matched_field is None:
             raise UnknownSectionAndFieldTag(
                 f"There is no section {path_parts[0]} \
                 for field {path_parts[1]}"
             )
+
+        if config_object:
+            setattr(config_object, parsed_field.name, matched_field.value)
+        else:
+            config_dict[parsed_field.name] = matched_field.value
+
+
+def _find_field(fields, sections: Dict[str, str], section_tag: str, field_tag: str):
+    for attr in ("label", "id"):
+        for field in fields:
+            if getattr(field, attr, None) == field_tag and _field_section_matches(
+                field, sections, section_tag
+            ):
+                return field
+    return None
+
+
+def _field_section_matches(field, sections: Dict[str, str], section_tag: str):
+    try:
+        section_id = field.section.id
+    except AttributeError:
+        section_id = None
+
+    return (
+        section_id is None
+        or section_id == sections.get(section_tag)
+        or section_tag in sections.values()
+    )
 
 
 def _convert_sections_to_dict(sections: List[Section]):
