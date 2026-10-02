@@ -1,4 +1,5 @@
 import os
+from urllib.parse import quote, urlencode
 
 from httpx._client import DEFAULT_TIMEOUT_CONFIG, Timeout
 
@@ -55,7 +56,7 @@ class PathBuilder:
         return self
 
     def query(self, key: str, value: str) -> 'PathBuilder':
-        key_value_pair = f"{key}={value}"
+        key_value_pair = urlencode({key: value}, quote_via=quote)
         self._append_path(query=key_value_pair)
         return self
 

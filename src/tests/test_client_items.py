@@ -42,30 +42,32 @@ async def test_get_item_by_id_async(respx_mock):
     assert mock.called
 
 
-def test_get_item_by_title(respx_mock):
+@pytest.mark.parametrize('title', [ITEM_TITLE, 'Login+A&B#1%20', 'caf\u00e9'])
+def test_get_item_by_title(respx_mock, title):
     expected_item = get_item()
-    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items"
     expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    items_summary_mock = respx_mock.get(expected_path_item_title).mock(return_value=Response(200, json=get_items()))
+    items_summary_mock = respx_mock.get(expected_path_item_title, params={'filter': f'title eq "{title}"'}).mock(return_value=Response(200, json=get_items()))
     item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
-    item = SS_CLIENT.get_item_by_title(ITEM_TITLE, VAULT_ID)
+    item = SS_CLIENT.get_item_by_title(title, VAULT_ID)
     compare_items(expected_item, item)
     assert items_summary_mock.called
     assert item_mock.called
 
 
 @pytest.mark.asyncio
-async def test_get_item_by_title_async(respx_mock):
+@pytest.mark.parametrize('title', [ITEM_TITLE, 'Login+A&B#1%20', 'caf\u00e9'])
+async def test_get_item_by_title_async(respx_mock, title):
     expected_item = get_item()
-    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items?filter=title eq \"{ITEM_TITLE}\""
+    expected_path_item_title = f"/v1/vaults/{VAULT_ID}/items"
     expected_path_item = f"/v1/vaults/{VAULT_ID}/items/{ITEM_ID}"
 
-    items_summary_mock = respx_mock.get(expected_path_item_title).mock(return_value=Response(200, json=get_items()))
+    items_summary_mock = respx_mock.get(expected_path_item_title, params={'filter': f'title eq "{title}"'}).mock(return_value=Response(200, json=get_items()))
     item_mock = respx_mock.get(expected_path_item).mock(return_value=Response(200, json=expected_item))
 
-    item = await SS_CLIENT_ASYNC.get_item_by_title(ITEM_TITLE, VAULT_ID)
+    item = await SS_CLIENT_ASYNC.get_item_by_title(title, VAULT_ID)
     compare_items(expected_item, item)
     assert items_summary_mock.called
     assert item_mock.called
