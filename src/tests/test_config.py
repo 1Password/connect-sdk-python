@@ -1,4 +1,5 @@
 from httpx import Response
+import pytest
 import onepasswordconnectsdk
 from onepasswordconnectsdk import client
 
@@ -23,6 +24,30 @@ class Config:
 
 
 CONFIG_CLASS = Config()
+
+
+@pytest.mark.parametrize("section", ["", "section1"])
+@pytest.mark.parametrize("use_object", [False, True])
+def test_load_dotted_field_labels(respx_mock, section, use_object):
+    field = {"id": "email", "label": "test.name@example.com", "value": "secret"}
+    if section:
+        field["section"] = {"id": section}
+    payload = dict(item, fields=[field])
+    respx_mock.get(f"v1/vaults/{VAULT_ID}/items/{ITEM_ID1}").mock(
+        return_value=Response(200, json=payload)
+    )
+    field_path = f"{section}.test.name@example.com"
+    if use_object:
+        class DottedConfig:
+            password: f'opitem:{ITEM_ID1} opfield:{field_path} opvault:{VAULT_ID}'
+
+        result = onepasswordconnectsdk.load(SS_CLIENT, DottedConfig())
+        assert result.password == "secret"
+    else:
+        result = onepasswordconnectsdk.load_dict(SS_CLIENT, {
+            "password": {"opitem": ITEM_ID1, "opfield": field_path, "opvault": VAULT_ID}
+        })
+        assert result == {"password": "secret"}
 
 
 def test_load(respx_mock):
