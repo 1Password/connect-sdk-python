@@ -34,7 +34,7 @@ jobs:
       - name: Build the package
         run: poetry build
       - name: Publish to PyPi
-        uses: step-security/gh-action-pypi-publish@ef63b3f651e4131083ceb916595ce721a1959385 # v1.14.0
+        uses: step-security/gh-action-pypi-publish@eccc9148d1fa355476d98c01819ec34b75a86f24 # v1.14.2
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Create Release tag
