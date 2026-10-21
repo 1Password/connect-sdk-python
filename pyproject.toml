@@ -15,6 +15,7 @@ repository = "https://github.com/1Password/connect-sdk-python"
 python = "^3.10"
 python-dateutil = "^2.8.1"
 httpx = "^0.28.1"
+certifi = ">=2026.10.19"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"

@@ -1,9 +1,9 @@
-FROM python:latest@sha256:2a8b92a1e9eb6ef2c888eb7e6c91283788c6d613fdc8fc22e12346aff7c4406d
+FROM python:3.14@sha256:455fc8bf2552c51738d27fde570c22bb0146d22f2e16e32a9baff8d2da94daf6
 
 WORKDIR /usr/src/app
 
 COPY . .
 
-RUN pip install onepasswordconnectsdk
+RUN pip install onepasswordconnectsdk "certifi>=2026.10.19"
 
 CMD [ "python", "./main.py"]
