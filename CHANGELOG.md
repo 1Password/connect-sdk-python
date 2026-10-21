@@ -12,6 +12,18 @@
 
 ---
 
+[//]: # (START/v2.1.1)
+# v2.1.1
+
+## Fixes
+ * Corrected the `load_dict()` return type hint to `Dict[str, Optional[str]]`. {#138}
+ * Fixed the `load_dict()` usage example in the documentation. {#98}
+
+## Security
+ * Require `certifi>=2026.10.19` to pick up the updated CA bundle. {#157}
+
+---
+
 [//]: # (START/v2.1.0)
 # v2.1.0
 
