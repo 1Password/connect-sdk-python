@@ -18,7 +18,7 @@ httpx = "^0.28.1"
 certifi = ">=2026.10.19"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.4.2"
+pytest = ">=8.4.2,<10.0.0"
 pytest-asyncio = "^1.1.0"
 pytest-cov = "^6.3.0"
 respx = "^0.22.0"
