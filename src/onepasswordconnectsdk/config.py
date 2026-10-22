@@ -81,8 +81,9 @@ def load_dict(client: "Client", config: dict):
 
     opitem (required): describes the name of the item to access from 1Password
 
-    offield (required): describes the name of the field to access within
-    the specified item
+    opfield (required): the section and field label, separated by the first
+    period. Additional periods are part of the field label. Use an empty
+    section for fields outside a section, for example .test.name@example.com.
 
     opvault: Only required if OP_VAULT is not set. Used to decribe the
     vault in which to fetch the item
@@ -140,7 +141,8 @@ def load(client: "Client", config: object):
     opitem (required): describes the name of the item to access from 1Password
 
     opfield (required): describes the name of the field to access
-    within the specified item
+    within the specified item. The first period separates the section from
+    the field label; additional periods are part of the field label.
 
     opvault: Only required if OP_VAULT is not set. Used to decribe
     the vault in which to fetch the item
@@ -223,7 +225,7 @@ def _set_values_for_item(
                 for {parsed_field.name}"
             )
 
-        path_parts = parsed_field.tag.split(".")
+        path_parts = parsed_field.tag.split(".", 1)
         if len(path_parts) != 2:
             raise InvalidFieldPathException(
                 f"Invalid field path format for \
