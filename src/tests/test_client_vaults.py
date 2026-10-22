@@ -56,25 +56,27 @@ async def test_get_vault_async(respx_mock):
     assert mock.called
 
 
-def test_get_vault_by_title(respx_mock):
+@pytest.mark.parametrize('title', [VAULT_NAME, 'Vault+A&B#1%20', 'caf\u00e9'])
+def test_get_vault_by_title(respx_mock, title):
     expected_vaults = list_vaults()
-    expected_path = f"/v1/vaults?filter=name eq \"{VAULT_NAME}\""
+    expected_path = '/v1/vaults'
 
-    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_vaults))
+    mock = respx_mock.get(expected_path, params={'filter': f'name eq "{title}"'}).mock(return_value=Response(200, json=expected_vaults))
 
-    vault = SS_CLIENT.get_vault_by_title(VAULT_NAME)
+    vault = SS_CLIENT.get_vault_by_title(title)
     compare_vaults(expected_vaults[0], vault)
     assert mock.called
 
 
 @pytest.mark.asyncio
-async def test_get_vault_by_title_async(respx_mock):
+@pytest.mark.parametrize('title', [VAULT_NAME, 'Vault+A&B#1%20', 'caf\u00e9'])
+async def test_get_vault_by_title_async(respx_mock, title):
     expected_vaults = list_vaults()
-    expected_path = f"/v1/vaults?filter=name eq \"{VAULT_NAME}\""
+    expected_path = '/v1/vaults'
 
-    mock = respx_mock.get(expected_path).mock(return_value=Response(200, json=expected_vaults))
+    mock = respx_mock.get(expected_path, params={'filter': f'name eq "{title}"'}).mock(return_value=Response(200, json=expected_vaults))
 
-    vault = await SS_CLIENT_ASYNC.get_vault_by_title(VAULT_NAME)
+    vault = await SS_CLIENT_ASYNC.get_vault_by_title(title)
     compare_vaults(expected_vaults[0], vault)
     assert mock.called
 
